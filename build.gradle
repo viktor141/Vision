@@ -11,7 +11,6 @@ buildscript {
         classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
     }
 }
-
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: "org.spongepowered.mixin"
 apply plugin: 'java-library'
@@ -19,8 +18,49 @@ apply plugin: 'idea'
 apply plugin: 'java'
 compileJava.options.encoding = 'UTF-8'
 
+task getVersionFromJavaClass() {
+    doLast {
+        // Execute Java class to retrieve the version
+        def version = new ByteArrayOutputStream()
+        exec {
+            // Adjust the command line to run MyClass from the com.cifrazia.vision package
+            commandLine 'java', '-cp', 'build/classes/java/main', 'com.cifrazia.vision.PropertiesEnvironment'
+            standardOutput = version
+        }
+        // Convert the output to string and trim any whitespace
+        def versionValue = version.toString().trim()
+        println "Version from MyClass: $versionValue"
+    }
+}
+
+tasks.register('generateProperties', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.cifrazia.vision.PropertiesEnvironment'// If your Java class needs arguments
+
+}
+
+
+/*tasks.register('incrementPatchVersion'){
+    doLast {
+        def propsFile = file('gradle.properties')
+        def props = new Properties()
+        propsFile.withInputStream { props.load(it) }
+        def currentVersion = props['version'].toString()
+        def versionComponents = currentVersion.split(/\./)
+        def major = versionComponents[0]
+        def minor = versionComponents[1]
+        def patch = versionComponents[2].toInteger() + 1
+        def newVersion = "${major}.${minor}.${patch}"
+        props.setProperty('version', newVersion)
+        propsFile.withWriter { writer ->
+            props.store(writer, null)
+        }
+    }
+}*/
+
+
 group = 'com.cifrazia'
-version = '0.0.1'
+
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -39,7 +79,13 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker', '--mixin', 'custom_main_menu.mixins.json'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker', '--mixin', 'vision.mixins.json',
+                    '--tcp', '{"ip":"185.137.235.3","port":17200,"secretKey":"B^IativL^^WiTpaPsVhb8kCXTRJ4*jxGDGCO3gXNQ*NhxK2WYwNOgutYT"}',
+                    '--modpack', '{"id":17,"name":"Heaven_Test"}',
+                    '--accessToken', '{"access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyMWIzNzAwMGU4MjRhNjE5YjRjNjBkYTY1ODdjOGEzIiwicGsiOiIwMDA2MTRlMmRmYWE4ZTg4ODZjNjE3ZGRmNWY3NTc3YyIsImlwIjoiOTQuMTgxLjIyLjUxIiwiZXhwaXJlIjoxNzE0NzQ2MjIxLjg2M30.t0VKgHjgY5C8YYzUf85vg3KPlM5jX8tF2SwjhQ7YP97SuSmrKM3fZc3WHzSKlzj7tMujNgkgE9a6XyhMHhx9_zxA1xX6iEUOJTpTYUnmnT4yCkWxpYWJoS6obQmcqkCfJw_kVL0GuG5NM4kGYhs_m7oMMjoFafv6xKvDOanhc1LWqzIQFGTbUT7liKx7soNKHDNElJ1jX80logMyfAwoR6Og5Jdvvgh9nRmuS8-rjIzBe0YM1mUkGJrUXsjG8F2Bm12_mGH8n25J0y8eCXjbiAVBGMeunBNybpSByAzF7v2sHEvWe5TmBxwm6zX1n9qMCer4gwn1ii3YFzkC1ESKj-UFBZRLYtiZav978VdBzHFwrTNUl0u1o1AgSO7USp6SENUw_r56bRpFr4EMuHUz6b9xkdtBVmjGW5rVSdEEQjs3iSUYWhMlJDteyfyRf8zisUV2ZlUY3GfmbH3fEYZLq1nHAdj2bw2Urp-IfmFJnHiJJezSMXV7WkBMPUTvVKuB2GXAXuc4KfQvt-5lCfOnO5FGztXAJAqQpbkkHDPLX0CjCKDf9bnvbM_6tv9qt60bHC7LNLAgS4KT7QojBeQzYeRxhiDzfoCYQPFYTP5H0SVEV6rCAyRNhFPHfJRjVO-AFyLlsGR5NwBJHMMrpN5fGAjLiRQMCyQxakvAfDMPBsc", "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExZDMxY2ZlYzdlMTQ0NmI5YTQ3M2IwMzZiZjE4ZWNhIiwiYWNjZXNzX2lkIjoiNzIxYjM3MDAwZTgyNGE2MTliNGM2MGRhNjU4N2M4YTMiLCJleHBpcmUiOjE3MTk5MzAyMjEuODYzfQ.sUQtq4vs-3GkoVDbq7BFDRwUSi5oqw7n63GELiGdXSJ_ljG0s0MC7_9EZghrA3-uF3OhXYVNNmUPXQ5nm2mzQ51yN-ReLIgKtATckNE3-y6uwo5hP2oVDHTGUj129O00JNwWqHw4x7BUqJ_jBCda0W6GhJkdeyfqFmKrL7oP4-HWVUfZFWKZS7RbFEmJ7EOthuUHP07cAvZtP9aT1VHGk2jhYwYJfH63YPzwxx_g4XenTgk-iDZmEY7_6rIEx6Zo4OWgeRYS1jQxcjvXGqDuofew7hf3mc-lSBhHtr8de-qX_VjEyV6Gqrhw6MEypJAU7Y95qiVdlBM1X1f3HIlzzVIr-kH-l8kw1wQPEWsojsLKRZJhoyxMdUZIBTnXUzk80jVLKQXvDuJQVaqY4p6JCLhtZSXDTzpC9rYstJFmtztlX6cslun72yhup_UH1g_Q_yLzVqRDakoY_G_YrtEzHxxDakhrr2pKmCScqOwG39LLO0FQz76VsNU4hkRSIo4-xoGA3GqIgbw-LMR6ItZeuFE8cWDfLKpEstBnqeIp-IGwsJ_JXZe30aVFQ8WaVwdI8jJg8DoReKMpwu4ASxJaPr9cv99Snqn2skdu8kHfOW4w6zwsmKGxdLRnUqSk6rawxdyTgBPUvguVr4ZN9wr692W5CSH_g5t5V07Vm26mZ0w"}'
         }
 
         server {
@@ -49,18 +95,22 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker', '--mixin', 'custom_main_menu.mixins.json'
+            args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker', '--mixin', 'vision.mixins.json'
         }
     }
-}
-
-mixin {
-    add sourceSets.main, "custom_main_menu.mixins.refmap.json"
 }
 
 repositories {
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/maven" }
+    maven {
+        name = "cifrazia"
+        credentials {
+            username project.username
+            password project.password
+        }
+        url "${project.url}/repository/cifrazia-public"
+    }
 }
 
 
@@ -71,12 +121,17 @@ dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
 }
 
+mixin {
+    add sourceSets.main, "mixins.vision.refmap.json"
+}
 
 sourceSets {
     main {
         output.resourcesDir = output.classesDirs.singleFile
     }
+
 }
+
 
 processResources {
     inputs.property "version", project.version
@@ -84,25 +139,32 @@ processResources {
     filesMatching(["mcmod.info", "pack.mcmeta"]) {
         expand project.properties
     }
+
+    filesMatching('**/version.properties') {
+        expand 'VERSION': project.version
+    }
+
 }
 
 jar {
     manifest {
         attributes([
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.version,
-                "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-                "MixinConfigs": "custom_main_menu.mixins.json",
+                "Implementation-Title"       : project.name,
+                "Implementation-Version"     : project.version,
+                "TweakClass"                 : "org.spongepowered.asm.launch.MixinTweaker",
+                "MixinConfigs"               : "vision.mixins.json",
                 "FMLCorePluginContainsFMLMod": "true", // Не забываем указать эти два флага,
-                "ForceLoadAsMod": "true",              // чтобы Forge нормально загрузил и мод, и миксины
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "FMLAT": "custom_main_menu_at.cfg"
+                "ForceLoadAsMod"             : "true",              // чтобы Forge нормально загрузил и мод, и миксины
+                "Implementation-Timestamp"   : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "FMLAT"                      : "vision_at.cfg"
         ])
     }
 }
 
+// Define a task to generate SRG mappings
 
 
-
-
+// Set dependency between tasks
+build.dependsOn createMcpToSrg
+build.dependsOn generateProperties
 

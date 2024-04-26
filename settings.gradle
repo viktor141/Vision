@@ -8,4 +8,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'CustomMainMenu'
+rootProject.name = 'Vision'
+include 'Vision'
