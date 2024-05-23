@@ -1,4 +1,4 @@
-package com.cifrazia.vision.connection.data;
+package com.cifrazia.vision.connection.data.element;
 
 public class ModPack {
     private int id;

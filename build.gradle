@@ -1,9 +1,19 @@
 buildscript {
+    ext.magiccore_forge_version = "1.12.2-1.3.117-SNAPSHOT"
     repositories {
         mavenCentral()
         maven { url = 'https://maven.minecraftforge.net/' }
         maven { url = "https://plugins.gradle.org/m2" }
         maven { url = "https://repo.spongepowered.org/maven" }
+
+        maven {
+            name = "cifrazia"
+            credentials {
+                username project.username
+                password project.password
+            }
+            url "${project.url}/repository/cifrazia-public"
+        }
     }
 
     dependencies {
@@ -85,7 +95,7 @@ minecraft {
             args '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker', '--mixin', 'vision.mixins.json',
                     '--tcp', '{"ip":"185.137.235.3","port":17200,"secretKey":"B^IativL^^WiTpaPsVhb8kCXTRJ4*jxGDGCO3gXNQ*NhxK2WYwNOgutYT"}',
                     '--modpack', '{"id":17,"name":"Heaven_Test"}',
-                    '--accessToken', '{"access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyMWIzNzAwMGU4MjRhNjE5YjRjNjBkYTY1ODdjOGEzIiwicGsiOiIwMDA2MTRlMmRmYWE4ZTg4ODZjNjE3ZGRmNWY3NTc3YyIsImlwIjoiOTQuMTgxLjIyLjUxIiwiZXhwaXJlIjoxNzE0NzQ2MjIxLjg2M30.t0VKgHjgY5C8YYzUf85vg3KPlM5jX8tF2SwjhQ7YP97SuSmrKM3fZc3WHzSKlzj7tMujNgkgE9a6XyhMHhx9_zxA1xX6iEUOJTpTYUnmnT4yCkWxpYWJoS6obQmcqkCfJw_kVL0GuG5NM4kGYhs_m7oMMjoFafv6xKvDOanhc1LWqzIQFGTbUT7liKx7soNKHDNElJ1jX80logMyfAwoR6Og5Jdvvgh9nRmuS8-rjIzBe0YM1mUkGJrUXsjG8F2Bm12_mGH8n25J0y8eCXjbiAVBGMeunBNybpSByAzF7v2sHEvWe5TmBxwm6zX1n9qMCer4gwn1ii3YFzkC1ESKj-UFBZRLYtiZav978VdBzHFwrTNUl0u1o1AgSO7USp6SENUw_r56bRpFr4EMuHUz6b9xkdtBVmjGW5rVSdEEQjs3iSUYWhMlJDteyfyRf8zisUV2ZlUY3GfmbH3fEYZLq1nHAdj2bw2Urp-IfmFJnHiJJezSMXV7WkBMPUTvVKuB2GXAXuc4KfQvt-5lCfOnO5FGztXAJAqQpbkkHDPLX0CjCKDf9bnvbM_6tv9qt60bHC7LNLAgS4KT7QojBeQzYeRxhiDzfoCYQPFYTP5H0SVEV6rCAyRNhFPHfJRjVO-AFyLlsGR5NwBJHMMrpN5fGAjLiRQMCyQxakvAfDMPBsc", "refresh_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjExZDMxY2ZlYzdlMTQ0NmI5YTQ3M2IwMzZiZjE4ZWNhIiwiYWNjZXNzX2lkIjoiNzIxYjM3MDAwZTgyNGE2MTliNGM2MGRhNjU4N2M4YTMiLCJleHBpcmUiOjE3MTk5MzAyMjEuODYzfQ.sUQtq4vs-3GkoVDbq7BFDRwUSi5oqw7n63GELiGdXSJ_ljG0s0MC7_9EZghrA3-uF3OhXYVNNmUPXQ5nm2mzQ51yN-ReLIgKtATckNE3-y6uwo5hP2oVDHTGUj129O00JNwWqHw4x7BUqJ_jBCda0W6GhJkdeyfqFmKrL7oP4-HWVUfZFWKZS7RbFEmJ7EOthuUHP07cAvZtP9aT1VHGk2jhYwYJfH63YPzwxx_g4XenTgk-iDZmEY7_6rIEx6Zo4OWgeRYS1jQxcjvXGqDuofew7hf3mc-lSBhHtr8de-qX_VjEyV6Gqrhw6MEypJAU7Y95qiVdlBM1X1f3HIlzzVIr-kH-l8kw1wQPEWsojsLKRZJhoyxMdUZIBTnXUzk80jVLKQXvDuJQVaqY4p6JCLhtZSXDTzpC9rYstJFmtztlX6cslun72yhup_UH1g_Q_yLzVqRDakoY_G_YrtEzHxxDakhrr2pKmCScqOwG39LLO0FQz76VsNU4hkRSIo4-xoGA3GqIgbw-LMR6ItZeuFE8cWDfLKpEstBnqeIp-IGwsJ_JXZe30aVFQ8WaVwdI8jJg8DoReKMpwu4ASxJaPr9cv99Snqn2skdu8kHfOW4w6zwsmKGxdLRnUqSk6rawxdyTgBPUvguVr4ZN9wr692W5CSH_g5t5V07Vm26mZ0w"}'
+                    '--accessToken', '{"access_token":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQzNmYxNjQ4M2JlZTQ2NDRiZjQwODU0ZDgyZjU1M2NkIiwicGsiOiIwMDA2MTRlMmRmYWE4ZTg4ODZjNjE3ZGRmNWY3NTc3YyIsImlwIjoiMTc2LjIxMi4yNDQuMTgyIiwiZXhwaXJlIjoxNzE4NDc2MTMzLjMzNn0.Fm9qKA6bcFuA-4eAdrRCoqI3HaDU5ldgHVNM8ovDn7xr4FuTbkGdXgqQwE56TT7ImiJqdM7OM8uigvZV9SuzRh4S3opMMhTZhg6PhGVroT5fidSMp-Q_vqgJvQENgRUQpfLXDPo4p18UnC2t_7R9-zreNBninKoOR0J7N9-eCzLYLXAWOZddtmOnYGX6EwJL2KuV0ljzNiHuefGz9NZO9arYDs1RZvBHKKUqmuQZOJD02GiCoarfifZiD7_JihvMBLHJ3ihTYsgNPGx_hgqjwkIqy3cg14Y6gV-vASE4K7C9s6y4IWdirf3uxJe2Ek4L_q451MoWK5izxXuGrsNkFFzntI4kc1cfp9HoyioLXvktP9yeTKeEvR0gvKZbF05gPcKEqH1_Igq9wRqA2Cib9rDAKwuxEzqewiXgVwWLJe733bogglL1LfqpyW9N8E4pEz8gZadJhyH2GhXeXld-wNu_yziXsiE27Fi1t41tXIOgEed2F1EltquTeWafGIk5HbAFYrMCPopGLBnuxErrf6qwHqatjDbdDoxo1RrHPg3n4KtuDR2bUmG76n7Lt1wGkFMWRUL-aVLTm3mMCYkJXADGtCs1IDqrsyro9kN9xh-m344-E4z29mYhYQ3iEo7U2hMc_Q21wS5bDPAxAC8CaH-F5_7clczMA_IDlELI9r8","refresh_token":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNhMzQ2YWJiMGU3NzQ0YmNhMTVlZDVlOGE2ZjRmYmE3IiwiYWNjZXNzX2lkIjoiNDM2ZjE2NDgzYmVlNDY0NGJmNDA4NTRkODJmNTUzY2QiLCJleHBpcmUiOjE3MjM2NjAxMzMuMzM2fQ.QsZahYnmRTmQPbqVgHeD2BR4vrwqlXJcvQ08Xi_eqbnJrlOni5vcroVkt-jGabk6-5b05h8y0BxZ-7RKcTF6CEcbRe8aWtK4GmztMlmnpXICdh-FXBBKdCP0TMgjFUNwpvCvw5pfKZYboHes4iQwKWMiq7-NoHNqgBDTOLtmU8SYFWmP5Zun4O5s6B2lUJ_ffT1h1sBW54gdpDKT-V7DezSiS163Rz-IOHbc9euRo4PBREVd0zxClZga-EeptGmCnhNS3fZCmfU_acDZIAy-8kIJ_azP0sDv5NEfT1LqbHt3OLCrD1EAv-l3Uc1rgjLaJSx_3WldiH1xwiHdV31SRD20Dl6M-xSE4NQoIJlFJi8G2UVf98WW80jXWcB-MSM6YaX_PJO9-STidBRbl08MzgB7L47CbsuuF9qSWwXmEP8zjkpl3_0fe-KfaI1iFW3uTjG0Lz2_gQ4wIOdLyCjYSVZfaq1Zg4wP5Y8Lc_qUcsT8uhKOam-_02LdUTvyL5PLjIp4lntbC0nq2dhoo9uZRsuLpVl4sRj4aRkBXaiJxR5Py0QLhQxH1ruS8tEH3bZXAtQONy2uO-0bW958di7Gw6OX8vDuVu8rWZGda9_Zd2kEK3-A2yM-6yE-dBy5z8PDupr4V412nUfolbNRG2zFdJ7dysUcVszWCYm-jwUsN8I"}'
         }
 
         server {
@@ -119,6 +129,8 @@ dependencies {
 
     implementation "org.spongepowered:mixin:0.8.5-SNAPSHOT"
     annotationProcessor 'org.spongepowered:mixin:0.8.5-SNAPSHOT:processor'
+
+    compileOnly 'com.mojang:authlib-client:1.0.37-20230208.064853-1'
 }
 
 mixin {

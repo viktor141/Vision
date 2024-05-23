@@ -12,7 +12,11 @@ public class ShopTradeOffer {
         this.shopItem = shopItem;
 
         try {
-            this.itemStack = shopItem.getItemStack();
+            this.itemStack = NBTJsonUtil.getItemStack(
+                    shopItem.getMaterialName(),
+                    shopItem.getCount(),
+                    shopItem.getDamage(),
+                    shopItem.getNbt());
         } catch (NBTJsonUtil.JsonException e) {
             throw new RuntimeException(e);
         }

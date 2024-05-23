@@ -1,4 +1,4 @@
-package com.cifrazia.vision.core.ui.gui;
+package com.cifrazia.vision.core.ui.gui.page;
 
 import com.cifrazia.vision.Vision;
 import com.cifrazia.vision.connection.auth.AuthorizedClient;
@@ -12,6 +12,7 @@ import com.cifrazia.vision.core.ui.buttons.BuyItemsButton;
 import com.cifrazia.vision.core.ui.buttons.CatalogButton;
 import com.cifrazia.vision.core.ui.buttons.CategoryButton;
 import com.cifrazia.vision.core.ui.buttons.base.Button;
+import com.cifrazia.vision.core.ui.gui.confirmation.ShopConfirmation;
 import com.cifrazia.vision.core.ui.util.Color;
 import com.cifrazia.vision.core.ui.util.draw.Draw;
 import com.cifrazia.vision.core.ui.util.draw.ItemsDrawer;
@@ -27,6 +28,7 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.cifrazia.vision.Vision.SIZE_OF_TEXTURE_KIT;
@@ -91,12 +93,6 @@ public class Shop extends Screen {
                 new Color(177, 229, 59, 255), new Color(25, 178, 8, 255), true);
 
         textField.drawTextBox();
-
-
-        /*drawGradientRectHorizontal(
-                screenStartX + gapX, screenStartY + gapY,
-                screenEndX - gapX, screenStartY + gapY + (8 >> 1),
-                -5118661, -15093240);*/
     }
 
 
@@ -154,7 +150,7 @@ class ShopItems extends ScrollableScreen {
     private final Gui parent;
     private final GuiTextField searchField;
     private List<ShopTradeOffer> items;
-    private List<BuyItemsButton> buyItemsButtons;
+    private List<BuyItemsButton> buyItemsButtons = new ArrayList<>();
     private final int gapX;
     private final int gapOfItems = 10 >> 1;
     private final int frameSize = 192 >> 1;
@@ -181,18 +177,21 @@ class ShopItems extends ScrollableScreen {
     }
 
     protected void shopListUpdate() {
-        items = client.getShopData().getItems();
-        buyItemsButtons = new ArrayList<>(items.size());
-        itemsDrawer.setItemCount(items.size());
-        scrollBar.update();
+        CompletableFuture.supplyAsync(() -> client.getShopData().getItems(), Vision.getInstance().getExecutorService())
+                .thenAccept(data -> {
+                    items = data;
+                    buyItemsButtons = new ArrayList<>(items.size());
+                    itemsDrawer.setItemCount(items.size());
+                    scrollBar.update();
 
-        for (ShopTradeOffer offer : items) {
-            BuyItemsButton button = new BuyItemsButton(this, 0, 0, offer);
-            button.setEvent(() -> {
-                mc.displayGuiScreen(new ModalWindow(parent, new ShopConfirmation(mc, parent, offer)));
-            });
-            buyItemsButtons.add(button);
-        }
+                    for (ShopTradeOffer offer : items) {
+                        BuyItemsButton button = new BuyItemsButton(this, 0, 0, offer);
+                        button.setEvent(() -> {
+                            mc.displayGuiScreen(new ModalWindow(new ShopConfirmation(mc, parent, offer)));
+                        });
+                        buyItemsButtons.add(button);
+                    }
+                });
     }
 
     @Override
@@ -205,6 +204,7 @@ class ShopItems extends ScrollableScreen {
     }
 
     private void drawFrame(int x, int y, int id, int mouseX, int mouseY, float partialTicks) {
+        if (id > items.size() - 1) return;
         mc.getTextureManager().bindTexture(Vision.NAVIGATION_SHOP_KIT);
 
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -276,53 +276,76 @@ class ShopItems extends ScrollableScreen {
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode) throws IOException {
+    public void keyTyped(char typedChar, int keyCode) {
         if (searchField.getText().isEmpty()) {
             shopListUpdate();
         } else {
-            shopListUpdate();
+            //shopListUpdate();
             items = items.stream()
-                    .filter(item -> item.getItemStack().getDisplayName().toLowerCase().startsWith(searchField.getText().toLowerCase()))
+                    .filter(item -> item.getItemStack().getDisplayName().toLowerCase().contains(searchField.getText().toLowerCase()))
                     .collect(Collectors.toList());
             itemsDrawer.setItemCount(items.size());
+            buyItemsButtons = new ArrayList<>(items.size());
+            for (ShopTradeOffer offer : items) {
+                BuyItemsButton button = new BuyItemsButton(this, 0, 0, offer);
+                button.setEvent(() -> {
+                    mc.displayGuiScreen(new ModalWindow(new ShopConfirmation(mc, parent, offer)));
+                });
+                buyItemsButtons.add(button);
+            }
         }
 
     }
 }
 
 class CategoryButtons extends ScrollableScreen {
-    private final List<CategoryButton> buttons;
     private final ShopItems shopItems;
-    private final List<ShopCategory> categories;
+    private final ShopData shopData;
     private final int gapX;
+    private List<ShopCategory> categories;
+    private List<CategoryButton> buttons = new ArrayList<>();
     private ItemsDrawer drawer;
 
     public CategoryButtons(Minecraft mc, ShopItems shopItems, ShopData shopData, int screenStartX, int screenStartY, int screenEndX, int gapX) {
         super(16 >> 1, 4 >> 1);
         this.mc = mc;
         this.shopItems = shopItems;
-        this.categories = shopData.getCategories();
-        this.buttons = new ArrayList<>(categories.size());
+        this.shopData = shopData;
         this.screenStartX = screenStartX;
         this.screenStartY = screenStartY;
         this.screenEndX = screenEndX;
         this.gapX = gapX;
 
-        addCategoryButton(new CategoryButton(this, buttons, 0, 0, "All items", 0)).
-                setEvent(() -> {
-                    shopData.setCategory(shopData.getAllCategory());
-                    shopItems.shopListUpdate();
+
+        categoryUpdate();
+    }
+
+    public void categoryUpdate() {
+        CompletableFuture.supplyAsync(shopData::getCategories, Vision.getInstance().getExecutorService())
+                .thenAccept(data -> {
+                    categories = data;
+                    buttons = new ArrayList<>(categories.size());
+                    drawer.setItemCount(categories.size());
+                    scrollBar.update();
+
+                    addCategoryButton(new CategoryButton(this, buttons, 0, 0, "All items", 0)).
+                            setEvent(() -> {
+                                shopData.setCategory(shopData.getAllCategory());
+                                shopItems.shopListUpdate();
+                            });
+
+                    for (ShopCategory category : categories) {
+                        addCategoryButton(new CategoryButton(this, buttons, 0, 0, category.getName(), category.getId())).
+                                setEvent(() -> {
+                                    shopData.setCategory(category);
+                                    shopItems.shopListUpdate();
+                                });
+                    }
+
+                    updateCordsOfButtons();
+                    buttons.get(0).onClick();
+
                 });
-
-        for (ShopCategory category : categories) {
-            addCategoryButton(new CategoryButton(this, buttons, 0, 0, category.getName(), category.getId())).
-                    setEvent(() -> {
-                        shopData.setCategory(category);
-                        shopItems.shopListUpdate();
-                    });
-        }
-
-        buttons.get(0).onClick();
     }
 
     @Override
@@ -359,6 +382,10 @@ class CategoryButtons extends ScrollableScreen {
                 buttons.size());
         drawer.setResolution(screenStartX, screenStartY, screenWidth);
 
+        updateCordsOfButtons();
+    }
+
+    private void updateCordsOfButtons() {
         for (int i = 0; i < buttons.size(); i++) {
             Button button = buttons.get(i);
 

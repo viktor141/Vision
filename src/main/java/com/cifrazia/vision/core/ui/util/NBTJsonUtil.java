@@ -1,8 +1,17 @@
 package com.cifrazia.vision.core.ui.util;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.util.ResourceLocation;
 
 public class NBTJsonUtil {
+
+    public static ItemStack getItemStack(String materialName, int count, int damage, String nbt) throws NBTJsonUtil.JsonException {
+        Item item = Item.REGISTRY.getObject(new ResourceLocation(materialName));
+
+        return item != null ? new ItemStack(item, count, damage, (nbt != null) ? Convert(nbt) : new NBTTagCompound()) : ItemStack.EMPTY;
+    }
 
     public static NBTTagCompound Convert(String json) throws JsonException {
         json = json.trim();

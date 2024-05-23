@@ -11,9 +11,10 @@ public class ImmortalButton extends DonationButton {
 
         name = "IMMORTAL";
 
-        texturePosX = 204 >> 1;
-        texturePosY = 138 >> 1;
-        label.setY(392 >> 1);
-        label.setWidth(108 >> 1);//107
+        texturePosX = 192 >> 1;
+        texturePosY = 140 >> 1;
+        label.setY(488 >> 1);
+        label.setWidth(130 >> 1);//129
+        icon.setX(102 >> 1);
     }
 }

@@ -8,17 +8,17 @@ import com.cifrazia.vision.core.ui.buttons.links.VkLink;
 import com.cifrazia.vision.core.ui.buttons.links.YouTubeLink;
 import com.cifrazia.vision.core.ui.gui.BankPanel;
 import com.cifrazia.vision.core.ui.gui.PauseButtons;
+import com.cifrazia.vision.core.ui.gui.PlayerInfoPanel;
+import com.cifrazia.vision.core.ui.gui.PlayerSkinPanel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.achievement.GuiStats;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.realms.RealmsBridge;
 
 public class InGameMenu extends Gui {
 
     private PauseButtons pauseButtons;
     private BankPanel bankPanel;
+    private PlayerInfoPanel playerInfoPanel;
+    private PlayerSkinPanel playerSkinPanel;
     private int lowerLine;
 
     @Override
@@ -27,6 +27,8 @@ public class InGameMenu extends Gui {
 
         pauseButtons = new PauseButtons(mc, this);
         bankPanel = new BankPanel(mc, false);
+        playerInfoPanel = new PlayerInfoPanel(mc, false);
+        playerSkinPanel = new PlayerSkinPanel(mc);
 
         lowerLine = height - (86 >> 1);
 
@@ -51,7 +53,8 @@ public class InGameMenu extends Gui {
 
         pauseButtons.drawScreen(mouseX, mouseY, partialTicks);
         bankPanel.drawScreen(mouseX, mouseY, partialTicks);
-
+        playerInfoPanel.drawScreen(mouseX, mouseY, partialTicks);
+        playerSkinPanel.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -60,6 +63,8 @@ public class InGameMenu extends Gui {
 
         pauseButtons.setResolution(width, height);
         bankPanel.setUp(22 >> 1, 22 >> 1);
+        playerInfoPanel.setUp(354 >> 1, 22 >> 1);
+        playerSkinPanel.setResolution(width, height);
     }
 
     @Override

@@ -17,24 +17,31 @@ public abstract class DonationButton extends FadingButton {
     protected TextureSizeData sizeData;
     protected TextureData background;
     protected TextureData label;
+    protected TextureData icon;
     protected int backgroundShift;
     protected int labelGapX;
     protected int labelGapY;
+    protected int iconGapX;
+    protected int iconGapY;
     protected String name;
 
     public DonationButton(Gui parentGUI, List<? extends ActiveButton> buttons, int x, int y) {
-        super(parentGUI, buttons, x, y, 198 >> 1, 44 >> 1, "");
+        super(parentGUI, buttons, x, y, 188 >> 1, 48 >> 1, "");
 
         buttonTextureKit = Vision.DONATION_KIT;
 
         sizeData = new TextureSizeData(sizeOfTextureKit);
 
-        background = new TextureData(sizeData, 0, 294 >> 1, 206 >> 1, 52 >> 1);
+        background = new TextureData(sizeData, 0, 300 >> 1, 196 >> 1, 56 >> 1);
         backgroundShift = 4 >> 1;
 
         label = new TextureData(sizeData, 0, 0, 0, 20 >> 1);
-        labelGapX = 38 >> 1;
-        labelGapY = 12 >> 1;
+        labelGapX = 42 >> 1;
+        labelGapY = 14 >> 1;
+
+        icon = new TextureData(sizeData, 0, 364>>1, 24 >> 1, 24 >> 1);
+        iconGapX = labelGapX - (4 >> 1) - icon.getWidth();
+        iconGapY = labelGapY - 1;
     }
 
     @Override
@@ -50,6 +57,12 @@ public abstract class DonationButton extends FadingButton {
         super.drawButton(mc, mouseX, mouseY, partialTicks);
 
         GlStateManager.enableBlend();
+        Draw.drawModalSquareWithCustomSizedTexture(
+                x + iconGapX, y + iconGapY,
+                icon.getX(), icon.getY(),
+                icon.getWidth(), icon.getHeight(),
+                icon.getSize());
+
         Draw.drawModalSquareWithCustomSizedTexture(
                 x + labelGapX, y + labelGapY,
                 label.getX(), label.getY(),

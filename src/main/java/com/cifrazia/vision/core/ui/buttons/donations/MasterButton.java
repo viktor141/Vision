@@ -13,8 +13,9 @@ public class MasterButton extends DonationButton {
         name = "MASTER";
 
         texturePosX = 0;
-        texturePosY = 90 >> 1;
-        label.setY(460 >> 1);
-        label.setWidth(82 >> 1);//81
+        texturePosY = 88 >> 1;
+        label.setY(398 >> 1);
+        label.setWidth(98 >> 1);//97
+        label.setX(0);
     }
 }

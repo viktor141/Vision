@@ -1,4 +1,4 @@
-package com.cifrazia.vision.core.ui.gui;
+package com.cifrazia.vision.core.ui.gui.page;
 
 import com.cifrazia.vision.core.abstracts.Screen;
 import com.cifrazia.vision.core.ui.buttons.donations.*;
@@ -45,7 +45,7 @@ public class Donation extends Screen {
 
         for (int i = 0; i < donationButtons.size(); i++) {
             DonationButton button = donationButtons.get(i);
-            button.updateCords(screenStartX + (80 >> 1) + (i * (button.width + (10 >> 1))), screenStartY + (20 >> 1));
+            button.updateCords(screenStartX + (40 >> 1) + (i * (button.width + (20 >> 1))), screenStartY + (20 >> 1));
         }
     }
 

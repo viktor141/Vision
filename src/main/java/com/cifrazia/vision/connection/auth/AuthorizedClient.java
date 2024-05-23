@@ -1,9 +1,13 @@
 package com.cifrazia.vision.connection.auth;
 
-import com.cifrazia.vision.connection.data.ModPack;
+import com.cifrazia.vision.connection.data.element.ModPack;
+import com.cifrazia.vision.connection.data.ServerData;
 import com.cifrazia.vision.connection.data.ShopData;
+import com.cifrazia.vision.connection.data.WarehouseData;
+import com.cifrazia.vision.connection.data.element.server.Server;
 import com.cifrazia.vision.connection.data.element.shop.ShopCategory;
 import com.cifrazia.vision.connection.data.element.shop.ShopItem;
+import com.cifrazia.vision.connection.data.element.warehouse.WarehouseItem;
 import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -20,6 +24,8 @@ public class AuthorizedClient extends Authorized {
     private String accessToken;
     private String refreshToken;
     private final ShopData shopData;
+    private final WarehouseData warehouseData;
+    private final ServerData serverData;
 
     public AuthorizedClient() {
         for (int i = 0; i < argumentList.size(); i++) {
@@ -33,6 +39,8 @@ public class AuthorizedClient extends Authorized {
             }
         }
         shopData = new ShopData(this);
+        warehouseData = new WarehouseData(this);
+        serverData = new ServerData(this);
     }
 
 
@@ -51,32 +59,64 @@ public class AuthorizedClient extends Authorized {
 
 
     public List<ShopItem> getAllShopList() {
-        List<ShopItem> items = gson.fromJson(
-                makeRequest(cifraziaEndPoint + "/minecraft/shop/items/" + getModPakParam()),
-                new TypeToken<List<ShopItem>>() {}.getType());
-
-        return items;
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/shop/items/" + getModPakParam()),
+                        new TypeToken<List<ShopItem>>() {
+                        }.getType()
+                )
+        );
     }
 
     public List<ShopCategory> getShopCategory() {
-        List<ShopCategory> categories = gson.fromJson(
-                makeRequest(cifraziaEndPoint + "/minecraft/shop/categories/" + getModPakParam()),
-                new TypeToken<List<ShopCategory>>() {}.getType());
-
-        return categories;
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/shop/categories/" + getModPakParam()),
+                        new TypeToken<List<ShopCategory>>() {
+                        }.getType()
+                )
+        );
     }
 
     public List<ShopItem> getCategoryShopList(ShopCategory category) {// /minecraft/shop/categories/183/items/?modpack_id=17
-        List<ShopItem> items = gson.fromJson(
-                makeRequest(cifraziaEndPoint + "/minecraft/shop/categories/" + category.getId() + "/items/" + getModPakParam()),
-                new TypeToken<List<ShopItem>>() {}.getType());
-
-        return items;
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/shop/categories/" + category.getId() + "/items/" + getModPakParam()),
+                        new TypeToken<List<ShopItem>>() {
+                        }.getType()
+                )
+        );
     }
 
+    public List<WarehouseItem> getWarehouseItems() {
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/shop/user/storage/" + getServerId()),
+                        new TypeToken<List<WarehouseItem>>() {
+                        }.getType()
+                )
+        );
+    }
+
+    public List<Server> getServers() {
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/modpacks/" + modpack.getId() + "/servers"),
+                        new TypeToken<List<Server>>() {
+                        }.getType()
+                )
+        );
+    }
 
     public ShopData getShopData() {
         return shopData;
     }
 
+    public WarehouseData getWarehouseData() {
+        return warehouseData;
+    }
+
+    public ServerData getServerData() {
+        return serverData;
+    }
 }

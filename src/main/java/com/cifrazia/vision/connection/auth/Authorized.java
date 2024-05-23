@@ -2,7 +2,7 @@ package com.cifrazia.vision.connection.auth;
 
 
 import com.cifrazia.vision.Vision;
-import com.cifrazia.vision.connection.data.ModPack;
+import com.cifrazia.vision.connection.data.element.ModPack;
 import com.google.gson.Gson;
 import net.minecraft.launchwrapper.Launch;
 
@@ -10,10 +10,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.Map.Entry;
 
 public abstract class Authorized {
@@ -21,6 +19,7 @@ public abstract class Authorized {
     protected final List<String> argumentList = (List<String>) Launch.blackboard.get("ArgumentList");
     protected final Gson gson = new Gson();
     protected ModPack modpack;
+    protected int currentServerId = 28;
 
     public Authorized() {
 
@@ -49,6 +48,13 @@ public abstract class Authorized {
         return getParamsString(params);
     }
 
+    protected String getServerId(){
+        HashMap<String, String> params = new HashMap<>();
+        params.put("server_id", String.valueOf(currentServerId));
+
+        return getParamsString(params);
+    }
+
 
     protected String response(HttpURLConnection connection) {
         try {
@@ -56,7 +62,7 @@ public abstract class Authorized {
             Vision.getInstance().logger.info("Response Code: " + responseCode);
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
 
@@ -75,5 +81,13 @@ public abstract class Authorized {
             throw new RuntimeException(e);
         }
         return "";
+    }
+
+    protected  <T> List<T> assignNotNull(List<T> list){
+        return list == null ? new ArrayList<>() : list;
+    }
+
+    public void setCurrentServerId(int currentServerId) {
+        this.currentServerId = currentServerId;
     }
 }

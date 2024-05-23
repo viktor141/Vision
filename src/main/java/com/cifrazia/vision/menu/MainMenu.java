@@ -5,7 +5,7 @@ import com.cifrazia.vision.core.ui.buttons.GrayWideButton;
 import com.cifrazia.vision.core.ui.buttons.RedWideButton;
 import com.cifrazia.vision.core.ui.buttons.links.DiscordLink;
 import com.cifrazia.vision.core.ui.buttons.links.VkLink;
-import com.cifrazia.vision.core.ui.gui.ServerList;
+import com.cifrazia.vision.core.ui.gui.page.ServerList;
 import com.cifrazia.vision.core.ui.util.texture.BackgroundTexture;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -23,7 +23,7 @@ public class MainMenu extends Gui {
     public void initGui() {
         super.initGui();
 
-        serverList = new ServerList(mc);
+        serverList = new ServerList(mc, this);
 
         lowerLine = height - (86 >> 1);
 
@@ -34,6 +34,8 @@ public class MainMenu extends Gui {
 
         addButton(new VkLink(this, width - (376 >> 1), lowerLine));
         addButton(new DiscordLink(this, width - (300 >> 1), lowerLine));
+
+        serverList.serversUpdate();
 
         //addButton(new StatisticButton(this, 244 >> 1, lowerLine).setEvent(() -> mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()))));
     }

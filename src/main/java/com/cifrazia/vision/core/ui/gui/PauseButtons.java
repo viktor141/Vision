@@ -76,7 +76,7 @@ public class PauseButtons extends Screen {
 
         int buttonStartX = screenEndX - (((150 + 10) >> 1) * 5);
         int buttonStartY = (screenHeight >> 1) + screenStartY - ((164 + 5) >> 1);
-        System.out.println(buttonStartX + " ");
+
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 5; j++) {
                 Button iconButton = (Button) buttonList.get((5 * i) + j);

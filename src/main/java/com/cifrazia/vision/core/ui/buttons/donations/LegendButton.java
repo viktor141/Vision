@@ -13,8 +13,9 @@ public class LegendButton extends DonationButton {
         name = "LEGEND";
 
         texturePosX = 0;
-        texturePosY = 138 >> 1;
-        label.setY(416 >> 1);
-        label.setWidth(82 >> 1);//81
+        texturePosY = 140 >> 1;
+        label.setY(458 >> 1);
+        label.setWidth(98 >> 1);//97
+        icon.setX(68 >> 1);
     }
 }

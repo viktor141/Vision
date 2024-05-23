@@ -13,16 +13,16 @@ public class SmallButton extends WideButton {
 
         borderSet();
 
-        uUnHovered = 266 >> 1;
-        uHovered = 382 >> 1;
-        v = 448 >> 1;
-        borderTextureWidth = 110 >> 1;
-        borderTextureHeight = 40 >> 1;
+        uUnHovered = 264 >> 1;
+        uHovered = 380 >> 1;
+        v = 446 >> 1;
+        borderTextureWidth = 114 >> 1;
+        borderTextureHeight = 44 >> 1;
     }
 
     @Override
     protected void borderSet() {
-        borderX = x - 1;
-        borderY = y - 1;
+        borderX = x - 2;
+        borderY = y - 2;
     }
 }

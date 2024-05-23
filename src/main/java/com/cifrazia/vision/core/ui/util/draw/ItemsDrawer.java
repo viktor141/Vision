@@ -39,6 +39,7 @@ public class ItemsDrawer {
     }
 
     public void draw(FrameTileDraw frameTileDraw) {
+        if(itemCount == 0) return;
         int itemsScreenWidth = screenWidth - (scrollBar.getBarWidth() + gapOfScreen);
 
         int columns = itemsScreenWidth / (frameSizeX + gapBetweenItems);

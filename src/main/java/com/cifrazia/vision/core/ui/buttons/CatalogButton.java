@@ -14,8 +14,8 @@ public class CatalogButton extends ActiveTransparentButton {
 
         buttonTextureKit = Vision.NAVIGATION_SHOP_KIT;
 
-        texturePosX = 0;
-        texturePosY = 418 >> 1;
+        texturePosX = 342 >> 1;
+        texturePosY = 262 >> 1;
     }
 
 }

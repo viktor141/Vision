@@ -1,7 +1,7 @@
 package com.cifrazia.vision.menu;
 
 import com.cifrazia.vision.core.abstracts.Gui;
-import com.cifrazia.vision.core.abstracts.Screen;
+import com.cifrazia.vision.core.abstracts.ModalScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -10,12 +10,12 @@ import static com.cifrazia.vision.core.ui.util.Color.EIGHT_PRESENT;
 public class ModalWindow extends Gui {
 
     private final Gui parentGui;
-    private final Screen modalWindow;
+    private final ModalScreen modalScreen;
 
 
-    public ModalWindow(Gui parentGui, Screen modalWindow) {
-        this.parentGui = parentGui;
-        this.modalWindow = modalWindow;
+    public ModalWindow(ModalScreen modalScreen) {
+        this.modalScreen = modalScreen;
+        this.parentGui = modalScreen.getParentGui();
     }
 
     @Override
@@ -27,31 +27,29 @@ public class ModalWindow extends Gui {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
-        parentGui.drawScreen(mouseX, mouseY, partialTicks);
+
+        if (parentGui != null) parentGui.drawScreen(mouseX, mouseY, partialTicks);
 
         GlStateManager.disableDepth();
 
         drawRect(0, 0, width, height, EIGHT_PRESENT.getFullColor());
 
-        drawString(mc.fontRenderer, "modal", 10, 10, -1);
-
-        modalWindow.drawScreen(mouseX, mouseY, partialTicks);
+        modalScreen.drawScreen(mouseX, mouseY, partialTicks);
 
         GlStateManager.enableDepth();
-
     }
 
     @Override
     public void setWorldAndResolution(Minecraft mc, int width, int height) {
         super.setWorldAndResolution(mc, width, height);
 
-        modalWindow.setResolution(width, height);
+        modalScreen.setResolution(width, height);
     }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        modalWindow.mouseClicked(mouseX, mouseY, mouseButton);
+        modalScreen.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
 }

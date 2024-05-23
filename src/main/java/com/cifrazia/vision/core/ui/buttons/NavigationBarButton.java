@@ -10,7 +10,7 @@ import java.util.Collection;
 
 
 public class NavigationBarButton extends ActiveButton {
-    private final int texturePressedPosY;
+    protected int texturePressedPosY;
 
     public NavigationBarButton(Gui parentGUI, Collection<? extends ActiveButton> buttons, int x, int y, String buttonText) {
         super(parentGUI, buttons, x, y, 144 >> 1, 52 >> 1, buttonText, 14737632);
@@ -19,7 +19,6 @@ public class NavigationBarButton extends ActiveButton {
         texturePosX = 0;
         texturePosY = 362 >> 1;
         texturePressedPosY = 306 >> 1;
-
     }
 
     public NavigationBarButton(Gui parentGUI, Collection<? extends ActiveButton> buttons, String buttonText) {

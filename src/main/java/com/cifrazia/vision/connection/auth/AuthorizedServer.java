@@ -1,6 +1,10 @@
 package com.cifrazia.vision.connection.auth;
 
-import com.cifrazia.vision.connection.data.BuyItemRequest;
+import com.cifrazia.vision.connection.data.element.server.Server;
+import com.cifrazia.vision.connection.data.element.warehouse.WarehouseItem;
+import com.cifrazia.vision.connection.data.element.warehouse.WarehouseUserRequest;
+import com.cifrazia.vision.connection.data.request.BuyItemRequest;
+import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -14,6 +18,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Properties;
 
 @SideOnly(Side.SERVER)
@@ -34,7 +39,7 @@ public class AuthorizedServer extends Authorized {
         serverID = (String) prop.get("server.id");
     }
 
-    protected String makeRequest(String url, BuyItemRequest buyItemRequest) {
+    protected String makePostRequest(String url, String entity) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("POST");
@@ -52,11 +57,9 @@ public class AuthorizedServer extends Authorized {
             connection.setRequestProperty("Accept", "application/json");
             connection.setDoOutput(true);
 
-            String entity = gson.toJson(buyItemRequest);
-
             System.out.println(entity);
 
-            try(OutputStream os = connection.getOutputStream()) {
+            try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = entity.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
@@ -67,14 +70,24 @@ public class AuthorizedServer extends Authorized {
         }
     }
 
-    private long round(long n){
+    private long round(long n) {
         return n - (n % 10);
     }
 
     public boolean userBuyItems(BuyItemRequest buyItemRequest) {
-        String resp =  makeRequest(cifraziaEndPoint + "/minecraft/shop/buy-items/", buyItemRequest);
-        System.out.println(resp);
-        return true;
+        return Boolean.parseBoolean(
+                makePostRequest(cifraziaEndPoint + "/minecraft/shop/buy-items/", gson.toJson(buyItemRequest))
+        );
+    }
+
+    public List<WarehouseItem> userWarehouseRetrieve(WarehouseUserRequest request) {
+        return assignNotNull(
+                gson.fromJson(
+                        makePostRequest(cifraziaEndPoint + "/minecraft/shop/user/storage/retrieve/", gson.toJson(request)),
+                        new TypeToken<List<WarehouseItem>>() {
+                        }.getType()
+                )
+        );
     }
 
 }

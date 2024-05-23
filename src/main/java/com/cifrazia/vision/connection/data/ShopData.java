@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ShopData {
-    private static final long interval = 5 * 60000;// 5 min
-    private final AuthorizedClient service;
+import static com.cifrazia.vision.Vision.interval;
+
+public class ShopData extends DataAuthClient {
     private List<ShopCategory> categories;
     private HashMap<ShopCategory, ShopCategoryItems> itemsByCategory;
     private ShopCategory currentCategory;
@@ -21,7 +21,7 @@ public class ShopData {
 
 
     public ShopData(AuthorizedClient service) {
-        this.service = service;
+        super(service);
         all = new ShopCategory(-1, "All", 0);
     }
 

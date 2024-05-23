@@ -1,9 +1,8 @@
-package com.cifrazia.vision.connection.data;
+package com.cifrazia.vision.connection.data.request;
 
 import com.cifrazia.vision.connection.data.element.shop.RequestItem;
 
 public class BuyItemRequest {
-
     private final String user_uuid;
     private final RequestItem[] items;
 

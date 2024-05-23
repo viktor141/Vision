@@ -2,8 +2,11 @@ package com.cifrazia.vision.core.ui.gui;
 
 import com.cifrazia.vision.Vision;
 import com.cifrazia.vision.core.abstracts.Screen;
+import com.cifrazia.vision.core.ui.buttons.DonationNavigationButton;
 import com.cifrazia.vision.core.ui.buttons.NavigationBarButton;
 import com.cifrazia.vision.core.ui.buttons.base.Button;
+import com.cifrazia.vision.core.ui.gui.page.Donation;
+import com.cifrazia.vision.core.ui.gui.page.Warehouse;
 import com.cifrazia.vision.menu.GeneralBusinessMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,13 +29,14 @@ public class NavigationBar extends Screen {
         addButton(new NavigationBarButton(this, navigationBarButtons.values(), "Case")).setEvent(() -> {
             navigationBarButtons.get("Shop").onClick();
         });
-        addButton(new NavigationBarButton(this, navigationBarButtons.values(), "Donation")).setEvent(() -> {
+        addButton(new DonationNavigationButton(this, navigationBarButtons.values(), "Donation")).setEvent(() -> {
             menu.setCurrentGui(donation);
         });
         addButton(new NavigationBarButton(this, navigationBarButtons.values(), "Kit")).setEvent(() -> {
             navigationBarButtons.get("Shop").onClick();
         });
         addButton(new NavigationBarButton(this, navigationBarButtons.values(), "Warehouse")).setEvent(() -> {
+            warehouse.updateItems();
             menu.setCurrentGui(warehouse);
         });
         addButton(new NavigationBarButton(this, navigationBarButtons.values(), "Pass")).setEvent(() -> {

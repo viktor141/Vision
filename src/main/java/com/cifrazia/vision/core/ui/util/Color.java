@@ -10,7 +10,8 @@ public class Color {
     public static final Color GRAY = new Color(92, 92, 92, 255);
     public static final Color GREEN = new Color(177, 229, 59, 255);
     public static final Color EMPTY = new Color(0, 0, 0, 0);
-
+    public static final Color BLUE_MODAL = new Color(54, 138, 236, 255);
+    public static final Color RED = new Color(202, 4, 4, 255);
 
     private final float rf;
     private final float gf;

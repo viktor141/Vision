@@ -1,15 +1,23 @@
 package com.cifrazia.vision.proxy;
 
+import com.cifrazia.vision.CustomPingServerHandler;
+import com.cifrazia.vision.PacketCustomRequest;
 import com.cifrazia.vision.connection.auth.AuthorizedServer;
+import com.cifrazia.vision.core.network.handlers.server.ServerBuyPacketHandler;
+import com.cifrazia.vision.core.network.packets.BuyItemPacket;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ServerProxy extends CommonProxy {
 
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
+
+        vision.getNetwork().registerMessage(new ServerBuyPacketHandler(), BuyItemPacket.class, id++, Side.SERVER);
+        vision.getNetwork().registerMessage(new CustomPingServerHandler(), PacketCustomRequest.class, id++, Side.SERVER);
     }
 
     @Override

@@ -21,8 +21,8 @@ public class CategoryButton extends ActiveTransparentButton {
 
         buttonTextureKit = Vision.NAVIGATION_SHOP_KIT;
 
-        texturePosX = 54 >> 1;
-        texturePosY = 458 >> 1;
+        texturePosX = 202 >> 1;
+        texturePosY = 428 >> 1;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CategoryButton extends ActiveTransparentButton {
         GlStateManager.enableBlend();
         drawModalRectWithCustomSizedTexture(
                 x - (56 >> 1), y,
-                0, texturePosY,
+                texturePosX - (54 >> 1), texturePosY,
                 50 >> 1, 40 >> 1,
                 sizeOfTextureKit, sizeOfTextureKit);
         GlStateManager.disableBlend();

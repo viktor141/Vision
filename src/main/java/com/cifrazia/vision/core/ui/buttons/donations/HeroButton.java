@@ -11,9 +11,10 @@ public class HeroButton extends DonationButton {
 
         name = "HERO";
 
-        texturePosX = 202 >> 1;
-        texturePosY = 90 >> 1;
-        label.setY(440 >> 1);
-        label.setWidth(54 >> 1);
+        texturePosX = 192 >> 1;
+        texturePosY = 88 >> 1;
+        label.setY(428 >> 1);
+        label.setWidth(66 >> 1);//65
+        icon.setX(34 >> 1);
     }
 }
