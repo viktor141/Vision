@@ -1,7 +1,5 @@
 package com.cifrazia.vision.proxy;
 
-import com.cifrazia.vision.CustomPingClientHandler;
-import com.cifrazia.vision.PacketCustomResponse;
 import com.cifrazia.vision.connection.auth.AuthorizedClient;
 import com.cifrazia.vision.core.network.handlers.client.ClientPacketBuyHandler;
 import com.cifrazia.vision.core.network.packets.BuyItemPacket;
@@ -17,7 +15,6 @@ public class ClientProxy extends CommonProxy {
     {
         super.preInit(event);
         vision.getNetwork().registerMessage(new ClientPacketBuyHandler(), BuyItemPacket.class, id++, Side.CLIENT);
-        vision.getNetwork().registerMessage(new CustomPingClientHandler(), PacketCustomResponse.class, id++, Side.CLIENT);
     }
 
     @Override

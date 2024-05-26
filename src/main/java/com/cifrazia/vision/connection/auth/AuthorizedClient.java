@@ -1,9 +1,11 @@
 package com.cifrazia.vision.connection.auth;
 
+import com.cifrazia.vision.connection.data.PrivilegeData;
 import com.cifrazia.vision.connection.data.element.ModPack;
 import com.cifrazia.vision.connection.data.ServerData;
 import com.cifrazia.vision.connection.data.ShopData;
 import com.cifrazia.vision.connection.data.WarehouseData;
+import com.cifrazia.vision.connection.data.element.privilege.PrivilegeRole;
 import com.cifrazia.vision.connection.data.element.server.Server;
 import com.cifrazia.vision.connection.data.element.shop.ShopCategory;
 import com.cifrazia.vision.connection.data.element.shop.ShopItem;
@@ -26,6 +28,7 @@ public class AuthorizedClient extends Authorized {
     private final ShopData shopData;
     private final WarehouseData warehouseData;
     private final ServerData serverData;
+    private final PrivilegeData privilegeData;
 
     public AuthorizedClient() {
         for (int i = 0; i < argumentList.size(); i++) {
@@ -41,6 +44,7 @@ public class AuthorizedClient extends Authorized {
         shopData = new ShopData(this);
         warehouseData = new WarehouseData(this);
         serverData = new ServerData(this);
+        privilegeData = new PrivilegeData(this);
     }
 
 
@@ -103,6 +107,16 @@ public class AuthorizedClient extends Authorized {
                 gson.fromJson(
                         makeRequest(cifraziaEndPoint + "/minecraft/modpacks/" + modpack.getId() + "/servers"),
                         new TypeToken<List<Server>>() {
+                        }.getType()
+                )
+        );
+    }
+
+    public List<PrivilegeRole> getPrivilegeList() {
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/perms/roles/" + getModPakParam()),
+                        new TypeToken<List<PrivilegeRole>>() {
                         }.getType()
                 )
         );

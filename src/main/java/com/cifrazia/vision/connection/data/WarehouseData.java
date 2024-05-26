@@ -6,11 +6,13 @@ import com.cifrazia.vision.connection.data.element.warehouse.WarehouseItemHolder
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.cifrazia.vision.Vision.interval;
 
 public class WarehouseData extends DataAuthClient {
     private List<WarehouseItemHolder> dataHolder;
+    private boolean forceUpdate;
 
     public WarehouseData(AuthorizedClient service) {
         super(service);
@@ -26,8 +28,11 @@ public class WarehouseData extends DataAuthClient {
     }
 
     public void forceUpdate() {
-        dataHolder = loadItems();
-        lastUpdateTime = System.currentTimeMillis();
+        CompletableFuture.supplyAsync(this::loadItems).thenAccept((data) ->{
+            dataHolder = data;
+            lastUpdateTime = System.currentTimeMillis();
+            forceUpdate = true;
+        });
     }
 
     private List<WarehouseItemHolder> loadItems() {
@@ -40,5 +45,13 @@ public class WarehouseData extends DataAuthClient {
         }
 
         return itemsHolder;
+    }
+
+    public boolean isForceUpdated() {
+        return forceUpdate;
+    }
+
+    public void setUpdated(){
+        forceUpdate = false;
     }
 }

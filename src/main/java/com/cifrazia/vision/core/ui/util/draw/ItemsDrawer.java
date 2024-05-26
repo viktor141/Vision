@@ -30,16 +30,15 @@ public class ItemsDrawer {
         this(scrollBar, scissoredDraw, frameSize, frameSize, gapBetweenItems, gapOfScreen, itemCount);
     }
 
-    public ItemsDrawer(int frameSize, int gapBetweenItems, int gapOfScreen, int itemCount) {
-        this(null, null, frameSize, frameSize, gapBetweenItems, gapOfScreen, itemCount);
+    public ItemsDrawer(int frameSize, int gapBetweenItems, int gapOfScreen) {
+        this(frameSize, frameSize, gapBetweenItems, gapOfScreen);
     }
 
-    public ItemsDrawer(int frameSize, int gapBetweenItems, int gapOfScreen) {
-        this(null, null, frameSize, frameSize, gapBetweenItems, gapOfScreen, 0);
+    public ItemsDrawer(int frameSizeX, int frameSizeY, int gapBetweenItems, int gapOfScreen) {
+        this(null, null, frameSizeX, frameSizeY, gapBetweenItems, gapOfScreen, 0);
     }
 
     public void draw(FrameTileDraw frameTileDraw) {
-        if(itemCount == 0) return;
         int itemsScreenWidth = screenWidth - (scrollBar.getBarWidth() + gapOfScreen);
 
         int columns = itemsScreenWidth / (frameSizeX + gapBetweenItems);

@@ -37,7 +37,7 @@ public class Warehouse extends Screen {
         items = new WarehouseItems(mc, client, screenStartX, screenStartY + (100 >> 1));
     }
 
-    public void updateItems (){
+    public void updateItems() {
         items.update();
     }
 
@@ -83,7 +83,6 @@ public class Warehouse extends Screen {
 }
 
 class WarehouseItems extends ScrollableScreen {
-
     private final int gapOfItems = 10 >> 1;
     private final int frameSize = 242 >> 1;
     private final WarehouseData data;
@@ -104,24 +103,22 @@ class WarehouseItems extends ScrollableScreen {
         itemsDrawer = new ItemsDrawer(frameSize, gapOfItems, gapOfItems);
     }
 
-    protected void update(){
-
+    protected void update() {
         CompletableFuture.supplyAsync(data::getItems)
-                .thenAccept((data) ->{
-                    itemsHolder = data;
-                    itemsDrawer.setItemCount(itemsHolder.size());
-                    getItemsButtons = new ArrayList<>(itemsHolder.size());
-                    scrollBar.update();
+                .thenAccept((data) -> {
+                    synchronized (this){
+                        itemsHolder = data;
+                        itemsDrawer.setItemCount(itemsHolder.size());
+                        getItemsButtons = new ArrayList<>(itemsHolder.size());
+                        scrollBar.update();
 
-                    for (WarehouseItemHolder item: itemsHolder){
-                        GetItemsButton button = new GetItemsButton(this, 0, 0, item);
-                        button.setEvent(()-> {
-                            Vision.getInstance().getNetwork().sendToServer(new ServerWarehouseRetrievePacket(new int[]{item.getWarehouseItem().getStack_id()}));
-
-                            this.data.forceUpdate();
-                            update();
-                        });
-                        getItemsButtons.add(button);
+                        for (WarehouseItemHolder item : itemsHolder) {
+                            GetItemsButton button = new GetItemsButton(this, 0, 0, item);
+                            button.setEvent(() -> {
+                                Vision.getInstance().getNetwork().sendToServer(new ServerWarehouseRetrievePacket(new int[]{item.getWarehouseItem().getStack_id()}));
+                            });
+                            getItemsButtons.add(button);
+                        }
                     }
                 });
     }
@@ -130,26 +127,31 @@ class WarehouseItems extends ScrollableScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
+        if(data.isForceUpdated()){
+            update();
+            data.setUpdated();
+        }
         itemsDrawer.draw((x, y, id) -> frame(x, y, id, mouseX, mouseY, partialTicks));
-
     }
 
     private void frame(int x, int y, int id, int mouseX, int mouseY, float partialTicks) {
-        mc.getTextureManager().bindTexture(Vision.NAVIGATION_SHOP_KIT);
-        GlStateManager.color(Color.WHITE_100.getRf(), Color.WHITE_100.getGf(), Color.WHITE_100.getBf(), Color.WHITE_100.getAf());
-        GlStateManager.enableBlend();
-        drawModalRectWithCustomSizedTexture(
-                x, y,
-                270 >> 1, 0,
-                242 >> 1, 242 >> 1,
-                SIZE_OF_TEXTURE_KIT, SIZE_OF_TEXTURE_KIT);
-        GetItemsButton button = getItemsButtons.get(id);
-        button.updateCords(x + (20 >> 1), y + (170 >> 1));//offset of frame
-        button.drawButton(mc, mouseX, mouseY, partialTicks);
-        GlStateManager.disableBlend();
+        synchronized (this){
+            mc.getTextureManager().bindTexture(Vision.NAVIGATION_SHOP_KIT);
+            GlStateManager.color(Color.WHITE_100.getRf(), Color.WHITE_100.getGf(), Color.WHITE_100.getBf(), Color.WHITE_100.getAf());
+            GlStateManager.enableBlend();
+            drawModalRectWithCustomSizedTexture(
+                    x, y,
+                    270 >> 1, 0,
+                    242 >> 1, 242 >> 1,
+                    SIZE_OF_TEXTURE_KIT, SIZE_OF_TEXTURE_KIT);
+            GetItemsButton button = getItemsButtons.get(id);
+            button.updateCords(x + (20 >> 1), y + (170 >> 1));//offset of frame
+            button.drawButton(mc, mouseX, mouseY, partialTicks);
+            GlStateManager.disableBlend();
 
-        ItemStack item = itemsHolder.get(id).getItemStack();
-        render.renderEffectsItem(item, x + (106 >> 1), y + (84 >> 1));
+            ItemStack item = itemsHolder.get(id).getItemStack();
+            render.renderEffectsItem(item, x + (106 >> 1), y + (84 >> 1));
+        }
     }
 
     @Override
