@@ -31,6 +31,7 @@ public class NavigationBar extends Screen {
         });
         addButton(new DonationNavigationButton(this, navigationBarButtons.values(), "Donation")).setEvent(() -> {
             menu.setCurrentGui(donation);
+            donation.privilegeListUpdate();
         });
         addButton(new NavigationBarButton(this, navigationBarButtons.values(), "Kit")).setEvent(() -> {
             navigationBarButtons.get("Shop").onClick();

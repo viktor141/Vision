@@ -9,6 +9,7 @@ import net.minecraft.launchwrapper.Launch;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -85,6 +86,19 @@ public abstract class Authorized {
 
     protected  <T> List<T> assignNotNull(List<T> list){
         return list == null ? new ArrayList<>() : list;
+    }
+
+    protected  <T> T  assignNotNull(T tClass, Class<T> clazz){
+        try {
+            if(tClass != null){
+                return tClass;
+            } else {
+                Vision.getInstance().logger.warn("Class {} was returned empty", clazz.toGenericString());
+                return  clazz.getDeclaredConstructor().newInstance();
+            }
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setCurrentServerId(int currentServerId) {

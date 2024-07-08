@@ -1,5 +1,7 @@
 package com.cifrazia.vision.core.ui.util.texture;
 
+import com.cifrazia.vision.Vision;
+
 public class TextureData {
     private final TextureSizeData size;
     private int x;
@@ -13,6 +15,10 @@ public class TextureData {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    public TextureData(int x, int y, int width, int height) {
+        this(new TextureSizeData(Vision.SIZE_OF_TEXTURE_KIT), x, y, width, height);
     }
 
     public void setScale(float scale) {

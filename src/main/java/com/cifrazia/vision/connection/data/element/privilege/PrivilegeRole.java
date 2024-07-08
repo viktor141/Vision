@@ -2,6 +2,7 @@ package com.cifrazia.vision.connection.data.element.privilege;
 
 import com.cifrazia.vision.connection.data.element.ModPack;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class PrivilegeRole {
@@ -18,8 +19,8 @@ public class PrivilegeRole {
     private boolean is_staff;
     private long price;
     private String currency;
-    private long created_at;
-    private long updated_at;
+    private float created_at;
+    private float updated_at;
     private String icon;
     private InheritRole inherit_role;
     private List<PermissionOfRole> perms;
@@ -30,6 +31,14 @@ public class PrivilegeRole {
         private int id;
         private String code_name;
         private String display_name;
+
+        public String getCode_name() {
+            return code_name;
+        }
+
+        public String getDisplay_name() {
+            return display_name;
+        }
     }
 
     public class PermissionOfRole{
@@ -37,7 +46,7 @@ public class PrivilegeRole {
         private String code_name;
         private String display_name;
         private String description;
-        private String values;
+        private HashMap<String, Integer> values;
         private boolean is_staff;
         private long price;
         private String currency;
@@ -45,6 +54,35 @@ public class PrivilegeRole {
         private long updated_at;
         private List<ModPack> modpacks;
         private boolean mode;
+
+        public String getCode_name() {
+            return code_name;
+        }
+
+        public String getDisplay_name() {
+            return display_name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+    }
+
+
+    public String getDisplay_name() {
+        return display_name;
+    }
+
+    public List<PermissionOfRole> getPerms() {
+        return perms;
+    }
+
+    public InheritRole getInheritRole() {
+        return inherit_role;
+    }
+
+    public String getCode_name() {
+        return code_name;
     }
 }
 

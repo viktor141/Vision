@@ -23,11 +23,14 @@ public class Render {
     private static final ResourceLocation RES_ITEM_GLINT = new ResourceLocation("textures/misc/enchanted_item_glint.png");
 
     private final Minecraft mc;
-    private float scale = 32.0F;
+    private final float offsetCoefficient = 0.115f;
+    private float scale;
+    private int renderGap;
 
     public Render(Minecraft mc) {
         this.mc = mc;
 
+        setScale(32.0F);
     }
 
     public void renderEffectsItem(ItemStack stack, int x, int y) {
@@ -74,12 +77,11 @@ public class Render {
         GlStateManager.scale(1.0F, -1.0F, 1.0F);
         GlStateManager.scale(scale, scale, scale);
 
-
         GlStateManager.enableLighting();
         GlStateManager.enableLight(0); // GL_LIGHT0 is just one of the available light sources
 
         // Set ambient light (generally set this to a low value)
-        float ambient = 0.75f; // Low ambient light
+        float ambient = 0.75F; // Low ambient light
         GlStateManager.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, RenderHelper.setColorBuffer(ambient, ambient, ambient, 1.0f));
 
         // Set light position (x, y, z, w). The last parameter (w) determines the type (directional or positional)
@@ -199,6 +201,32 @@ public class Render {
 
     public void setScale(float scale) {
         this.scale = scale;
+        updateRenderGap();
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    private void updateRenderGap() {
+        renderGap = (int) (scale / (scale * (offsetCoefficient / (((int) scale - 16) >> 4))));
+    }
+
+    public int getRenderGap() {
+        return renderGap;
+    }
+
+    public int normalize(int position) {
+        return position - getRenderGap();
+    }
+
+    public boolean isMouseOnItem(int mouseX, int mouseY, int itemX, int itemY, ItemStack itemStack) {
+        if (itemStack.isEmpty()) return false;
+
+        return mouseX >= normalize(itemX)
+                && mouseX <= normalize(itemX) + scale
+                && mouseY >= normalize(itemY)
+                && mouseY <= normalize(itemY) + scale;
     }
 
     /*private void draw(BufferBuilder renderer, int x, int y, int width, int height, int red, int green, int blue, int alpha)

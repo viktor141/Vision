@@ -51,7 +51,7 @@ public class ItemsDrawer {
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < Math.min(columns, itemCount - (columns * i)); j++) {
                     frameTileDraw.run(
-                            x + xFixer + gapOfScreen + (j * (frameSizeX + gapBetweenItems)),
+                            x + xFixer + gapOfScreen + (gapBetweenItems >> 1) + (j * (frameSizeX + gapBetweenItems)),
                             y + (i * (frameSizeY + gapBetweenItems)) + scrollBar.getScrollOffset(),
                             columns * i + j);
                 }

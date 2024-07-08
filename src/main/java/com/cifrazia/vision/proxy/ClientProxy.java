@@ -29,7 +29,6 @@ public class ClientProxy extends CommonProxy {
         super.postInit(event);
 
         authorized = new AuthorizedClient();
-
     }
 
 

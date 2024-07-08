@@ -70,6 +70,10 @@ public class ScrollBar extends Gui {
         if (maxScroll < 0) ratio = (float) screenHeight / (-maxScroll + screenHeight);
     }
 
+    public int getContentHeight() {
+        return screenHeight - maxScroll;
+    }
+
     private void setScrollOffset(int scroll) {
         if (scroll != 0) {
             scrollOffset += scroll / 5;
@@ -106,5 +110,9 @@ public class ScrollBar extends Gui {
 
     public void update() {
         scrollOffset = 0;
+    }
+
+    public int getMaxScroll() {
+        return maxScroll;
     }
 }

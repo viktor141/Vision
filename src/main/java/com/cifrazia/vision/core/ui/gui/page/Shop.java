@@ -53,7 +53,10 @@ public class Shop extends Screen {
         items = new ShopItems(mc, parentGui, screenStartX + gapX, screenStartY + (94 >> 1), gapX, client, searchField);
         bank = new Bank(mc, screenStartX + gapX, screenStartY + (94 >> 1), gapX);
 
-        addCatalogButton(new CatalogButton(this, catalogButtons, 0, 0, "Items")).setEvent(() -> this.setCurrentGui(items));
+        addCatalogButton(new CatalogButton(this, catalogButtons, 0, 0, "Items")).setEvent(() -> {
+            this.setCurrentGui(items);
+            items.load();
+        });
         addCatalogButton(new CatalogButton(this, catalogButtons, 0, 0, "Bank")).setEvent(() -> this.setCurrentGui(bank));
 
         catalogButtons.get(0).onClick();
@@ -154,6 +157,7 @@ class ShopItems extends ScrollableScreen {
     private final Render render;
     private ItemsDrawer itemsDrawer;
     private final AuthorizedClient client;
+    private ItemStack tooltipItem = ItemStack.EMPTY;
 
 
     public ShopItems(Minecraft mc, Gui parent, int screenStartX, int screenStartY, int gapX, AuthorizedClient client, SearchField searchField) {
@@ -169,6 +173,9 @@ class ShopItems extends ScrollableScreen {
         itemsDrawer = new ItemsDrawer(frameSize, gapOfItems, gapOfScreen);
 
         categoryButtons = new CategoryButtons(mc, this, client.getShopData(), screenStartX, screenStartY, screenStartX + (220 >> 1), gapX);
+    }
+
+    public void load() {
         categoryButtons.categoryUpdate();
     }
 
@@ -188,10 +195,8 @@ class ShopItems extends ScrollableScreen {
                             });
                             buyItemsButtons.add(button);
                         }
-                        System.out.println("shopLoadSyncEnd");
                     }
                 });
-        System.out.println("ShopLoadEnd");
     }
 
     @Override
@@ -203,6 +208,14 @@ class ShopItems extends ScrollableScreen {
         synchronized (client.getShopData()) {
             itemsDrawer.draw((x, y, id) -> drawFrame(x, y, id, mouseX, mouseY, partialTicks));
         }
+
+        drawItemTooltip(mouseX, mouseY);
+    }
+
+
+    protected void drawItemTooltip(int mouseX, int mouseY) {
+        super.drawItemTooltip(mouseX, mouseY, tooltipItem);
+        tooltipItem = ItemStack.EMPTY;
     }
 
     private void drawFrame(int x, int y, int id, int mouseX, int mouseY, float partialTicks) {
@@ -217,7 +230,46 @@ class ShopItems extends ScrollableScreen {
         GlStateManager.disableBlend();
 
         ItemStack item = items.get(id).getItemStack();
-        render.renderEffectsItem(item, x + (80 >> 1), y + (60 >> 1));
+        int itemX = x + (80 >> 1);
+        int itemY = y + (60 >> 1);
+
+        render.renderEffectsItem(item, itemX, itemY);
+
+        drawDescription(x, y, 0.75125f, item.getDisplayName());
+
+        if (render.isMouseOnItem(mouseX, mouseY, itemX, itemY, item))
+            tooltipItem = item;
+    }
+
+    private void drawDescription(int x, int y, float scale, String text) {
+        int gap = 2;
+        int addedY = 14;
+
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, scale);
+
+        int allowedLength = frameSize - 12;
+        List<String> list = mc.fontRenderer.listFormattedStringToWidth(text, (int) (allowedLength / scale));
+        int fixY = ((mc.fontRenderer.FONT_HEIGHT + gap) * (list.size() - 1)) >> 1;
+
+        if (list.size() >= 3) {
+            List<String> replace = new ArrayList<>(2);
+            replace.add(list.get(0));
+            replace.add(list.get(1) + "...");
+
+            list = replace;
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            drawCenteredString(
+                    mc.fontRenderer,
+                    list.get(i),
+                    (int) ((x + (frameSize >> 1)) / scale),
+                    ((int) (y / scale)) + addedY - fixY + ((mc.fontRenderer.FONT_HEIGHT + gap) * i),
+                    -1);
+        }
+
+        GlStateManager.popMatrix();
     }
 
     @Override
@@ -271,6 +323,8 @@ class ShopItems extends ScrollableScreen {
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
+        if (!searchField.isFocused()) return;
+
         if (searchField.getText().isEmpty()) {
             shopListUpdate();
         } else {
@@ -330,14 +384,12 @@ class CategoryButtons extends ScrollableScreen {
                 scrollBar.update();
 
                 addCategoryButton(new CategoryButton(this, buttons, 0, 0, "All items", 0)).setEvent(() -> {
-                    shopData.setCategory(shopData.getAllCategory());
-                    shopItems.shopListUpdate();
+                    categorySetter(shopData.getAllCategory());
                 });
 
                 for (ShopCategory category : categories) {
                     addCategoryButton(new CategoryButton(this, buttons, 0, 0, category.getName(), category.getId())).setEvent(() -> {
-                        shopData.setCategory(category);
-                        shopItems.shopListUpdate();
+                        categorySetter(category);
                     });
                 }
 
@@ -345,6 +397,16 @@ class CategoryButtons extends ScrollableScreen {
                 emulateAllCategoriesClick();
             }
         });
+    }
+
+    private void categorySetter(ShopCategory category) {
+        CompletableFuture.supplyAsync(() -> {
+            shopData.setCategory(category);
+            return null;
+        }).thenAccept(data -> {
+            shopItems.shopListUpdate();
+        });
+
     }
 
     public void emulateAllCategoriesClick() {

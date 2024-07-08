@@ -7,9 +7,11 @@ import net.minecraft.item.ItemStack;
 public class ShopTradeOffer {
     private final ShopItem shopItem;
     private final ItemStack itemStack;
+    private int count;
 
     public ShopTradeOffer(ShopItem shopItem) {
         this.shopItem = shopItem;
+        count = 1;
 
         try {
             this.itemStack = NBTJsonUtil.getItemStack(
@@ -28,5 +30,13 @@ public class ShopTradeOffer {
 
     public ShopItem getShopItem() {
         return shopItem;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getCount() {
+        return count;
     }
 }

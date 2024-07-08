@@ -1,11 +1,11 @@
 package com.cifrazia.vision.connection.auth;
 
-import com.cifrazia.vision.connection.data.PrivilegeData;
+import com.cifrazia.vision.Vision;
+import com.cifrazia.vision.connection.data.*;
+import com.cifrazia.vision.connection.data.element.CifraziaUser;
 import com.cifrazia.vision.connection.data.element.ModPack;
-import com.cifrazia.vision.connection.data.ServerData;
-import com.cifrazia.vision.connection.data.ShopData;
-import com.cifrazia.vision.connection.data.WarehouseData;
-import com.cifrazia.vision.connection.data.element.privilege.PrivilegeRole;
+import com.cifrazia.vision.connection.data.element.privilege.Kit;
+import com.cifrazia.vision.connection.data.element.privilege.RawPrivileges;
 import com.cifrazia.vision.connection.data.element.server.Server;
 import com.cifrazia.vision.connection.data.element.shop.ShopCategory;
 import com.cifrazia.vision.connection.data.element.shop.ShopItem;
@@ -14,7 +14,10 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
@@ -29,6 +32,9 @@ public class AuthorizedClient extends Authorized {
     private final WarehouseData warehouseData;
     private final ServerData serverData;
     private final PrivilegeData privilegeData;
+    private final PlayerCifraziaData playerCifraziaData;
+    private final KitsData kitsData;
+    private final UserData userData;
 
     public AuthorizedClient() {
         for (int i = 0; i < argumentList.size(); i++) {
@@ -45,6 +51,9 @@ public class AuthorizedClient extends Authorized {
         warehouseData = new WarehouseData(this);
         serverData = new ServerData(this);
         privilegeData = new PrivilegeData(this);
+        playerCifraziaData = new PlayerCifraziaData(this);
+        kitsData = new KitsData(this);
+        userData = new UserData(this);
     }
 
 
@@ -112,18 +121,67 @@ public class AuthorizedClient extends Authorized {
         );
     }
 
-    public List<PrivilegeRole> getPrivilegeList() {
+    public RawPrivileges getPrivileges() {
         return assignNotNull(
                 gson.fromJson(
                         makeRequest(cifraziaEndPoint + "/minecraft/perms/roles/" + getModPakParam()),
-                        new TypeToken<List<PrivilegeRole>>() {
+                        new TypeToken<RawPrivileges>() {
+                        }.getType()
+
+                ),
+                RawPrivileges.class
+        );
+    }
+
+    public List<Kit> getKits() {
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/minecraft/shop/kits/" + getModPakParam()),
+                        new TypeToken<List<Kit>>() {
                         }.getType()
                 )
         );
     }
 
+    public CifraziaUser getCifraziaUser() {
+        return assignNotNull(
+                gson.fromJson(
+                        makeRequest(cifraziaEndPoint + "/user/"),
+                        new TypeToken<CifraziaUser>() {
+                        }.getType()
+                ),
+                CifraziaUser.class
+        );
+    }
+
+    public BufferedImage downloadSkin(String url) {
+        BufferedImage skinImage = null;
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("X-Access-Token", accessToken);
+            connection.setRequestProperty("X-Refresh-Token", refreshToken);
+
+            InputStream inputStream = connection.getInputStream();
+            skinImage = ImageIO.read(inputStream);
+            inputStream.close();
+
+        } catch (Exception e) {
+            Vision.getInstance().logger.warn("Skin can't be downloaded");
+        }
+
+        if(skinImage == null){
+            Vision.getInstance().logger.info("Skin was null");
+        }
+        return skinImage;
+    }
+
     public ShopData getShopData() {
         return shopData;
+    }
+
+    public PrivilegeData getPrivilegeData() {
+        return privilegeData;
     }
 
     public WarehouseData getWarehouseData() {
@@ -132,5 +190,17 @@ public class AuthorizedClient extends Authorized {
 
     public ServerData getServerData() {
         return serverData;
+    }
+
+    public PlayerCifraziaData getPlayerCifraziaData() {
+        return playerCifraziaData;
+    }
+
+    public KitsData getKitsData() {
+        return kitsData;
+    }
+
+    public UserData getUserData() {
+        return userData;
     }
 }

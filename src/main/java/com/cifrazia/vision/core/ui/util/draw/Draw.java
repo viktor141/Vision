@@ -6,10 +6,13 @@ import com.cifrazia.vision.core.ui.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.Vec3d;
+
+import java.nio.FloatBuffer;
 
 import static com.cifrazia.vision.Vision.SIZE_OF_TEXTURE_KIT;
 
@@ -53,7 +56,7 @@ public class Draw extends Gui {
         int yCenter = y + (height >> 1) - 4;
 
         String text = "Buy";
-        String price = String.valueOf(offer.getShopItem().getPrice());
+        String price = String.valueOf(offer.getShopItem().getPrice() * offer.getCount());
 
         int stringWidth = mc.fontRenderer.getStringWidth(price) + (16 >> 1);
         int gap = 12;
@@ -85,6 +88,81 @@ public class Draw extends Gui {
         GlStateManager.disableBlend();
     }
 
+    public static void drawPlayerModel(int posX, int posY, int scale, float mouseX, float mouseY) {
+        float viewPointX = mouseX != -1 ?  posX - mouseX : -26F;
+        float viewPointY = mouseY != -1 ? posY - (scale * 1.66f) - mouseY : -2.94F;
+        EntityLivingBase player = Minecraft.getMinecraft().player;
+
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) posX, (float) posY,  - 500);
+        GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        float f = player.renderYawOffset;
+        float f1 = player.rotationYaw;
+        float f2 = player.rotationPitch;
+        float f3 = player.prevRotationYawHead;
+        float f4 = player.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        frontLightning();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-((float) Math.atan((viewPointY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        player.renderYawOffset = (float) Math.atan((viewPointX / 40.0F)) * 20.0F;
+        player.rotationYaw = (float) Math.atan((viewPointX / 40.0F)) * 40.0F;
+        player.rotationPitch = -((float) Math.atan((viewPointY / 40.0F))) * 20.0F;
+        player.rotationYawHead = player.rotationYaw;
+        player.prevRotationYawHead = player.rotationYaw;
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
+        rendermanager.setPlayerViewY(180.0F);
+        rendermanager.setRenderShadow(false);
+        rendermanager.renderEntity(player, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.setRenderShadow(true);
+        player.renderYawOffset = f;
+        player.rotationYaw = f1;
+        player.rotationPitch = f2;
+        player.prevRotationYawHead = f3;
+        player.rotationYawHead = f4;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+    }
+
+
+    public static void frontLightning()
+    {
+        Vec3d LIGHT0_POS = (new Vec3d(-0.2D, 1.0D, -0.699999988079071D)).normalize();
+        Vec3d LIGHT1_POS = (new Vec3d(-0.8D, 1.0D, 0.699999988079071D)).normalize();
+
+        GlStateManager.enableLighting();
+        GlStateManager.enableLight(0);
+        GlStateManager.enableLight(1);
+        GlStateManager.enableColorMaterial();
+        GlStateManager.colorMaterial(1032, 5634);
+        GlStateManager.glLight(16384, 4611, setColorBuffer((float) LIGHT0_POS.x, (float) LIGHT0_POS.y, (float) LIGHT0_POS.z, 0.0F));
+        float f = 0.6F;
+        GlStateManager.glLight(16384, 4609, setColorBuffer(f, f, f, 1.0F));
+        GlStateManager.glLight(16384, 4608, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+        GlStateManager.glLight(16384, 4610, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+        GlStateManager.glLight(16385, 4611, setColorBuffer((float) LIGHT1_POS.x, (float) LIGHT1_POS.y, (float) LIGHT1_POS.z, 0.0F));
+        GlStateManager.glLight(16385, 4609, setColorBuffer(0.6F, 0.6F, 0.6F, 1.0F));
+        GlStateManager.glLight(16385, 4608, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+        GlStateManager.glLight(16385, 4610, setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+        GlStateManager.shadeModel(7424);
+        float f1 = 0.4F;
+        GlStateManager.glLightModel(2899, setColorBuffer(f1, f1, f1, 1.0F));
+    }
+
+    public static FloatBuffer setColorBuffer(float p_74521_0_, float p_74521_1_, float p_74521_2_, float p_74521_3_)
+    {
+        FloatBuffer COLOR_BUFFER = GLAllocation.createDirectFloatBuffer(4);
+        COLOR_BUFFER.put(p_74521_0_).put(p_74521_1_).put(p_74521_2_).put(p_74521_3_);
+        COLOR_BUFFER.flip();
+        return COLOR_BUFFER;
+    }
 
     /*public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight)
     {

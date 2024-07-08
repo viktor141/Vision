@@ -52,6 +52,11 @@ public class PanelFrame {
         actualWidth = width;
     }
 
+    public void updateCoords(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public int getWidth() {
         return width;
     }
@@ -68,7 +73,6 @@ public class PanelFrame {
         this.height = height - (gap << 1);
         actualHeight = height;
     }
-
 }
 
 /*public void drawPanel(int mouseX, int mouseY) {

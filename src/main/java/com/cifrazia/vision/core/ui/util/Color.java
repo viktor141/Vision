@@ -8,6 +8,7 @@ public class Color {
     public static final Color EIGHT_PRESENT = new Color(0, 0, 0, 204);
     public static final Color SIX_PRESENT = new Color(0, 0, 0, 153);
     public static final Color GRAY = new Color(92, 92, 92, 255);
+    public static final Color GRAY_COMMAND_DESCRIPTION = new Color(111, 111, 111, 255);
     public static final Color GREEN = new Color(177, 229, 59, 255);
     public static final Color EMPTY = new Color(0, 0, 0, 0);
     public static final Color BLUE_MODAL = new Color(54, 138, 236, 255);

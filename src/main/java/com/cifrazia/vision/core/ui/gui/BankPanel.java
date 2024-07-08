@@ -1,6 +1,8 @@
 package com.cifrazia.vision.core.ui.gui;
 
 import com.cifrazia.vision.Vision;
+import com.cifrazia.vision.connection.auth.AuthorizedClient;
+import com.cifrazia.vision.connection.data.PlayerCifraziaData;
 import com.cifrazia.vision.core.abstracts.Gui;
 import com.cifrazia.vision.core.ui.buttons.links.DonationLink;
 import net.minecraft.client.Minecraft;
@@ -11,10 +13,9 @@ import static com.cifrazia.vision.Vision.SIZE_OF_TEXTURE_KIT;
 public class BankPanel extends Gui {
     private final DonationLink donationLink;
     private final boolean reverse;
+    private final PlayerCifraziaData data;
     private int x;
     private int y;
-    private long ruby = 12006;
-    private long gold = 13;
 
     public BankPanel(Minecraft mc, boolean reverse) {
         this.reverse = reverse;
@@ -22,6 +23,7 @@ public class BankPanel extends Gui {
         width = 262 >> 1;
         height = 48 >> 1;
         donationLink = addButton(new DonationLink(this, 0, 0));
+        data = ((AuthorizedClient) Vision.getInstance().getAuthorization()).getPlayerCifraziaData();
     }
 
     @Override
@@ -44,8 +46,8 @@ public class BankPanel extends Gui {
                 SIZE_OF_TEXTURE_KIT, SIZE_OF_TEXTURE_KIT);
         GlStateManager.disableBlend();
 
-        drawNumber(ruby, x + (36 >> 1), 9);
-        drawNumber(gold, x + (178 >> 1), 6);
+        drawNumber(data.getRuby(), x + (36 >> 1), 9);
+        drawNumber(data.getGold(), x + (178 >> 1), 6);
     }
 
     private void drawRevertible() {
@@ -83,9 +85,9 @@ public class BankPanel extends Gui {
         this.x = x;
         this.y = y;
 
-        if(reverse){
-            donationLink.updateCords(x -donationLink.getButtonWidth(), y);
-        }else {
+        if (reverse) {
+            donationLink.updateCords(x - donationLink.getButtonWidth(), y);
+        } else {
             donationLink.updateCords(x + width, y);
         }
 

@@ -3,7 +3,10 @@ package com.cifrazia.vision.mixin;
 import com.cifrazia.vision.menu.InGameMenu;
 import com.cifrazia.vision.menu.PressMenu;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,6 +25,8 @@ public abstract class MixinMinecraft {
     @Shadow
     public abstract void displayGuiScreen(@Nullable GuiScreen guiScreenIn);
 
+    @Shadow public GameSettings gameSettings;
+
     @Inject(method = "displayGuiScreen", at = @At(value = "HEAD"), cancellable = true)
     public void displayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
         if (guiScreenIn == null) return;
@@ -30,7 +35,7 @@ public abstract class MixinMinecraft {
             ci.cancel();
             displayGuiScreen(new PressMenu());
         }
-        if(guiScreenIn instanceof GuiIngameMenu){
+        if (guiScreenIn instanceof GuiIngameMenu) {
             ci.cancel();
             displayGuiScreen(new InGameMenu());
         }

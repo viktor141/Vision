@@ -4,7 +4,7 @@ import com.cifrazia.vision.core.ui.util.Color;
 import com.cifrazia.vision.core.ui.util.draw.Draw;
 import net.minecraft.client.Minecraft;
 
-public class ConfirmationPanel {
+public class ConfirmationPanel implements Panel {
     private static final Color UPPER_START = new Color(242, 242, 242, 255);
     private static final Color UPPER_END = new Color(159, 159, 159, 255);
 
@@ -61,5 +61,9 @@ public class ConfirmationPanel {
 
         panelFrame.setUp(x, y, width, 6 >> 1);
         panelFrame.setHeight(height);
+    }
+
+    public void updateY(int y){
+        this.y = y;
     }
 }

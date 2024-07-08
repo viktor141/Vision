@@ -23,7 +23,6 @@ public class ScissoredDraw {
 
         scaledResolution = new ScaledResolution(mc);
 
-
         setup();
     }
 

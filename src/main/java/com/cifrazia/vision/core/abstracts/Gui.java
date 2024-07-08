@@ -4,6 +4,9 @@ import com.cifrazia.vision.core.ui.buttons.base.ActiveButton;
 import com.cifrazia.vision.core.ui.buttons.base.Button;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.item.ItemStack;
 
 import java.io.IOException;
 
@@ -56,7 +59,7 @@ public abstract class Gui extends GuiScreen {
     public void setWorldAndResolution(Minecraft mc, int width, int height) {
         super.setWorldAndResolution(mc, width, height);
 
-        if (currentGui != null) currentGui.setResolution(width, height);
+        if (currentGui != null) currentGui.setResolution(this.width, this.height);
     }
 
     @Override
@@ -85,6 +88,16 @@ public abstract class Gui extends GuiScreen {
         super.keyTyped(typedChar, keyCode);
 
         if (currentGui != null) currentGui.keyTyped(typedChar, keyCode);
+    }
+
+    protected void drawItemTooltip(int mouseX, int mouseY, ItemStack itemStack) {
+        if (!itemStack.isEmpty()) {
+            if (fontRenderer == null) fontRenderer = mc.fontRenderer;
+            GlStateManager.enableBlend();
+            renderToolTip(itemStack, mouseX, mouseY);
+            GlStateManager.disableBlend();
+            RenderHelper.disableStandardItemLighting();//fix bug when another ui making darker
+        }
     }
 
     /*protected void drawGradientRectHorizontal(int left, int top, int right, int bottom, int startColor, int endColor) {

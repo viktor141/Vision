@@ -90,6 +90,7 @@ class WarehouseItems extends ScrollableScreen {
     private List<WarehouseItemHolder> itemsHolder = new ArrayList<>();
     private List<GetItemsButton> getItemsButtons;
     private ItemsDrawer itemsDrawer;
+    private ItemStack tooltipItem = ItemStack.EMPTY;
 
     public WarehouseItems(Minecraft mc, AuthorizedClient client, int screenStartX, int screenStartY) {
         super(20 >> 1, 6 >> 1);
@@ -106,7 +107,7 @@ class WarehouseItems extends ScrollableScreen {
     protected void update() {
         CompletableFuture.supplyAsync(data::getItems)
                 .thenAccept((data) -> {
-                    synchronized (this){
+                    synchronized (this) {
                         itemsHolder = data;
                         itemsDrawer.setItemCount(itemsHolder.size());
                         getItemsButtons = new ArrayList<>(itemsHolder.size());
@@ -127,15 +128,22 @@ class WarehouseItems extends ScrollableScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        if(data.isForceUpdated()){
+        if (data.isForceUpdated()) {
             update();
             data.setUpdated();
         }
         itemsDrawer.draw((x, y, id) -> frame(x, y, id, mouseX, mouseY, partialTicks));
+
+        drawItemTooltip(mouseX, mouseY);
+    }
+
+    protected void drawItemTooltip(int mouseX, int mouseY) {
+        super.drawItemTooltip(mouseX, mouseY, tooltipItem);
+        tooltipItem = ItemStack.EMPTY;
     }
 
     private void frame(int x, int y, int id, int mouseX, int mouseY, float partialTicks) {
-        synchronized (this){
+        synchronized (this) {
             mc.getTextureManager().bindTexture(Vision.NAVIGATION_SHOP_KIT);
             GlStateManager.color(Color.WHITE_100.getRf(), Color.WHITE_100.getGf(), Color.WHITE_100.getBf(), Color.WHITE_100.getAf());
             GlStateManager.enableBlend();
@@ -150,12 +158,19 @@ class WarehouseItems extends ScrollableScreen {
             GlStateManager.disableBlend();
 
             ItemStack item = itemsHolder.get(id).getItemStack();
-            render.renderEffectsItem(item, x + (106 >> 1), y + (84 >> 1));
+            int itemX = x + (106 >> 1);
+            int itemY = y + (84 >> 1);
+            render.renderEffectsItem(item, itemX, itemY);
+
+            if (render.isMouseOnItem(mouseX, mouseY, itemX, itemY, item))
+                tooltipItem = item;
         }
     }
 
     @Override
     public void setResolution(int width, int height) {
+        this.width = width;
+        this.height = height;
         screenEndX = width - screenStartX;
         screenEndY = height - (26 >> 1);
 

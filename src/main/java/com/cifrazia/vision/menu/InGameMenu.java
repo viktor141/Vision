@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.achievement.GuiStats;
 
 public class InGameMenu extends Gui {
-
     private PauseButtons pauseButtons;
     private BankPanel bankPanel;
     private PlayerInfoPanel playerInfoPanel;
@@ -28,7 +27,7 @@ public class InGameMenu extends Gui {
         pauseButtons = new PauseButtons(mc, this);
         bankPanel = new BankPanel(mc, false);
         playerInfoPanel = new PlayerInfoPanel(mc, false);
-        playerSkinPanel = new PlayerSkinPanel(mc);
+        playerSkinPanel = new PlayerSkinPanel(mc, this);
 
         lowerLine = height - (86 >> 1);
 
@@ -44,6 +43,7 @@ public class InGameMenu extends Gui {
         addButton(new YouTubeLink(this, width - (386 >> 1), lowerLine));
 
         addButton(new StatisticButton(this, width - (310 >> 1), lowerLine).setEvent(() -> mc.displayGuiScreen(new GuiStats(this, this.mc.player.getStatFileWriter()))));
+
     }
 
 

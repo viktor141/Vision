@@ -4,7 +4,9 @@ import com.cifrazia.vision.Vision;
 import com.cifrazia.vision.core.abstracts.Gui;
 import com.cifrazia.vision.core.ui.buttons.base.HighButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.gen.layer.GenLayerShore;
 
 import javax.annotation.Nonnull;
 
@@ -36,6 +38,15 @@ public class IconButton extends HighButton {
 
         public void drawIcon(Minecraft mc, int x, int y) {
             mc.getTextureManager().bindTexture(ICON_TEXTURES);
+
+            /*drawScaledCustomSizeModalRect(
+                    x, y,
+                    ,,
+                    , iconTextureY,
+                    textureSize, textureSize,
+                    512, 512);*/
+
+            GlStateManager.disableRescaleNormal();
 
             drawModalRectWithCustomSizedTexture(
                     x, y,

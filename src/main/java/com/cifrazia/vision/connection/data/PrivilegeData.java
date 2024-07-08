@@ -1,29 +1,27 @@
 package com.cifrazia.vision.connection.data;
 
 import com.cifrazia.vision.connection.auth.AuthorizedClient;
-import com.cifrazia.vision.connection.data.element.privilege.PrivilegeRole;
-
-import java.util.List;
+import com.cifrazia.vision.connection.data.element.privilege.FormattedPrivileges;
 
 import static com.cifrazia.vision.Vision.interval;
 
 public class PrivilegeData extends DataAuthClient {
 
-    private List<PrivilegeRole> privilegeRoles;
+    private FormattedPrivileges privileges;
 
     public PrivilegeData(AuthorizedClient service) {
         super(service);
     }
 
-    public List<PrivilegeRole> getPrivilegeRoles() {
-        if (privilegeRoles == null || lastUpdateTime < System.currentTimeMillis() - interval) {
-            privilegeRoles = loadPrivilegeRoles();
+    public FormattedPrivileges getPrivilegeRoles() {
+        if (privileges == null || lastUpdateTime < System.currentTimeMillis() - interval) {
+            privileges = loadPrivilegeRoles();
             lastUpdateTime = System.currentTimeMillis();
         }
-        return privilegeRoles;
+        return privileges;
     }
 
-    private List<PrivilegeRole> loadPrivilegeRoles(){
-        return service.getPrivilegeList();
+    private FormattedPrivileges loadPrivilegeRoles() {
+        return new FormattedPrivileges(service.getPrivileges());
     }
 }

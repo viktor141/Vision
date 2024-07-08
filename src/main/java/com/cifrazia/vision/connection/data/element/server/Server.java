@@ -68,4 +68,12 @@ public class Server {
     public int getPriority() {
         return priority;
     }
+
+    public class CifraziaPlayer {
+        /*{id: UUID, name: string}*/
+
+        private String id;
+        private String name;
+
+    }
 }

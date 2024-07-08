@@ -4,6 +4,7 @@ import com.cifrazia.vision.Vision;
 import com.cifrazia.vision.core.abstracts.Gui;
 import com.cifrazia.vision.core.ui.buttons.base.ActiveButton;
 import com.cifrazia.vision.core.ui.buttons.base.FadingButton;
+import com.cifrazia.vision.core.ui.util.Color;
 import com.cifrazia.vision.core.ui.util.draw.Draw;
 import com.cifrazia.vision.core.ui.util.texture.TextureData;
 import com.cifrazia.vision.core.ui.util.texture.TextureSizeData;
@@ -14,6 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public abstract class DonationButton extends FadingButton {
+    protected Color color;
     protected TextureSizeData sizeData;
     protected TextureData background;
     protected TextureData label;
@@ -39,14 +41,17 @@ public abstract class DonationButton extends FadingButton {
         labelGapX = 42 >> 1;
         labelGapY = 14 >> 1;
 
-        icon = new TextureData(sizeData, 0, 364>>1, 24 >> 1, 24 >> 1);
+        icon = new TextureData(sizeData, 0, 364 >> 1, 24 >> 1, 24 >> 1);
         iconGapX = labelGapX - (4 >> 1) - icon.getWidth();
         iconGapY = labelGapY - 1;
     }
 
     @Override
     public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        mc.getTextureManager().bindTexture(buttonTextureKit);
+
         GlStateManager.enableBlend();
+        GlStateManager.color(1.0f, 1.0f,1.0f,1.0f);
         Draw.drawModalSquareWithCustomSizedTexture(
                 x - backgroundShift, y - backgroundShift,
                 background.getX(), background.getY(),
@@ -88,5 +93,13 @@ public abstract class DonationButton extends FadingButton {
     @Override
     protected void hoverStateRender() {
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

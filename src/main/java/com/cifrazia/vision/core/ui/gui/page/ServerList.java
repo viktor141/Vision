@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.cifrazia.vision.Vision.SERVER_KIT;
 import static com.cifrazia.vision.Vision.SIZE_OF_TEXTURE_KIT;
@@ -30,7 +31,7 @@ public class ServerList extends ScrollableScreen {
     private final ServerData serverData;
     private final Gui parent;
     private SmallButton[] serverButtons;
-    private List<Server> servers;
+    private List<Server> servers = new ArrayList<>();
     private List<MinecraftServerPing> serversPing;
     private ScissoredDraw scissoredDraw;
 
@@ -44,29 +45,32 @@ public class ServerList extends ScrollableScreen {
     }
 
     public void serversUpdate() {
-        servers = serverData.getServers();
-        serverButtons = new SmallButton[servers.size()];
-        serversPing = new ArrayList<>(servers.size());
-        for (Server server : servers) {
-            MinecraftServerPing minecraftServerPing = new MinecraftServerPing(server);
-            serversPing.add(minecraftServerPing);
-            minecraftServerPing.serverPing();
-        }
+        CompletableFuture.supplyAsync(serverData::getServers).thenAccept((data) -> {
+                    synchronized (serverData) {
+                        servers = data;
+                        serverButtons = new SmallButton[servers.size()];
+                        serversPing = new ArrayList<>(servers.size());
+                        for (Server server : servers) {
+                            MinecraftServerPing minecraftServerPing = new MinecraftServerPing(server);
+                            serversPing.add(minecraftServerPing);
+                            minecraftServerPing.serverPing();
+                        }
 
-        for (int i = 0; i < serverButtons.length; i++) {
-            SmallButton serverButton = new SmallButton(this, "Play");
-            Server server = servers.get(i);
-            serverButton.setEvent(() -> serverData.connect(mc, parent, server));
+                        for (int i = 0; i < serverButtons.length; i++) {
+                            SmallButton serverButton = new SmallButton(this, "Play");
+                            Server server = servers.get(i);
+                            serverButton.setEvent(() -> serverData.connect(mc, parent, server));
 
-            serverButtons[i] = serverButton;
-        }
+                            serverButtons[i] = serverButton;
+                        }
+                    }
+                });
     }
 
     public void drawServerListGui(int mouseX, int mouseY, float partialTicks) {
-        scissoredDraw.draw(() -> {
-            drawServers(mouseX, mouseY, partialTicks);
-        });
-
+        synchronized (serverData){
+            scissoredDraw.draw(() -> drawServers(mouseX, mouseY, partialTicks));
+        }
         scrollBar.drawScrollBar();
     }
 
@@ -141,6 +145,8 @@ public class ServerList extends ScrollableScreen {
     private void drawServerStatus(int x, int y, int serverId) {
         MinecraftServerPing serverPing = serversPing.get(serverId);
         ServerInfo info = serverPing.getServerInfo();
+
+        GlStateManager.color(1.0f,1.0f,1.0f,1.0f);
 
         int barStartX = (24 >> 1), barStartY = (74 >> 1);
 

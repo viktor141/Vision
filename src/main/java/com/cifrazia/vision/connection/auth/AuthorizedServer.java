@@ -1,9 +1,10 @@
 package com.cifrazia.vision.connection.auth;
 
-import com.cifrazia.vision.connection.data.element.server.Server;
 import com.cifrazia.vision.connection.data.element.warehouse.WarehouseItem;
 import com.cifrazia.vision.connection.data.element.warehouse.WarehouseUserRequest;
 import com.cifrazia.vision.connection.data.request.BuyItemRequest;
+import com.cifrazia.vision.connection.data.request.WalletUserRequest;
+import com.cifrazia.vision.connection.data.response.UserBalanceResponse;
 import com.google.gson.reflect.TypeToken;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -39,16 +40,14 @@ public class AuthorizedServer extends Authorized {
         serverID = (String) prop.get("server.id");
     }
 
+
     protected String makePostRequest(String url, String entity) {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("POST");
 
-            String signature = round(System.currentTimeMillis() / 1000) + serverID + signatureKey;
-
-            System.out.println(signature);
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashedSignature = digest.digest(signature.getBytes(StandardCharsets.UTF_8));
+            byte[] hashedSignature = digest.digest(generateSignature().getBytes(StandardCharsets.UTF_8));
 
             connection.setRequestProperty("X-Server-Signature", DatatypeConverter.printHexBinary(hashedSignature).toLowerCase());
             connection.setRequestProperty("X-Server-Id", serverID);
@@ -70,6 +69,10 @@ public class AuthorizedServer extends Authorized {
         }
     }
 
+    protected String generateSignature() {
+        return round(System.currentTimeMillis() / 1000) + serverID + signatureKey;
+    }
+
     private long round(long n) {
         return n - (n % 10);
     }
@@ -88,6 +91,15 @@ public class AuthorizedServer extends Authorized {
                         }.getType()
                 )
         );
+    }
+
+    public UserBalanceResponse getUserWallet(WalletUserRequest request) {
+        return assignNotNull(
+                gson.fromJson(
+                        makePostRequest(cifraziaEndPoint + "/minecraft/shop/user/wallet/", gson.toJson(request)),
+                        new TypeToken<UserBalanceResponse>() {
+                        }.getType()),
+                UserBalanceResponse.class);
     }
 
 }

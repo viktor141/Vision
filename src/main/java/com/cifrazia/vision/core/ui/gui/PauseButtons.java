@@ -31,7 +31,7 @@ public class PauseButtons extends Screen {
                 .setEvent(() -> {
                     GeneralBusinessMenu menu = new GeneralBusinessMenu("Shop");
                     mc.displayGuiScreen(menu);
-                    menu.shop.setBankScreen();
+                    menu.getShop().setBankScreen();
                 });
 
         addButton(new IconButton(this, 0, 0, Icon.WAREHOUSE))

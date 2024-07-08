@@ -5,6 +5,8 @@ import com.cifrazia.vision.core.abstracts.ModalScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
+import java.io.IOException;
+
 import static com.cifrazia.vision.core.ui.util.Color.EIGHT_PRESENT;
 
 public class ModalWindow extends Gui {
@@ -28,7 +30,7 @@ public class ModalWindow extends Gui {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        if (parentGui != null) parentGui.drawScreen(mouseX, mouseY, partialTicks);
+        if (parentGui != null) parentGui.drawScreen(0, 0, partialTicks);
 
         GlStateManager.disableDepth();
 
@@ -52,4 +54,21 @@ public class ModalWindow extends Gui {
         modalScreen.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
+    @Override
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+        modalScreen.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+    }
+
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
+        super.mouseReleased(mouseX, mouseY, state);
+        modalScreen.mouseReleased(mouseX, mouseY, state);
+    }
+
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+        modalScreen.handleMouseInput();
+    }
 }

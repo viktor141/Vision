@@ -5,7 +5,6 @@ import com.cifrazia.vision.core.ui.util.panel.ConfirmationPanel;
 public abstract class PanelScreen extends ModalScreen {
     protected final ConfirmationPanel confirmationPanel;
 
-
     public PanelScreen(ConfirmationPanel confirmationPanel){
         this.confirmationPanel = confirmationPanel;
     }
@@ -19,7 +18,7 @@ public abstract class PanelScreen extends ModalScreen {
     @Override
     public void setResolution(int width, int height) {
         screenStartX = (width >> 1) - (screenWidth >> 1);
-        screenStartY = (height >> 1) - (screenHeight >> 1);
+        screenStartY = Math.max(((height >> 1) - (screenHeight >> 1)), 0) ;
 
         screenEndX = screenStartX + screenWidth;
         screenEndY = screenStartY + screenHeight;
